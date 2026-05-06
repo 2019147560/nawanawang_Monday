@@ -108,7 +108,7 @@ export const DEFAULT_DETAIL_DATA: ProgramDetail = {
 // ID별 상세 데이터 (필요시 추가)
 export const DETAIL_DATA_BY_ID: Record<number, ProgramDetail> = {
   1: {
-    intro: '아주 작은 외출에서 시작해, 또래와 함께 일상의 리듬을 천천히 되찾아가는 8주 프로그램.',
+    intro: '아주 비작은 외출에서 시작해, 또래와 함께 일상의 리듬을 천천히 되찾아가는 8주 프로그램.',
     description:
       '집 밖으로 나오는 첫걸음에 필요한 것들을 함께 마련해, 처음 4주는 1:1 동행으로 시작해 점차 소그룹 활동으로 옮겨갑니다. 끝과 길이, 본인의 속도에 맞춰 천천히 진행됩니다.',
     qualification:
