@@ -78,7 +78,7 @@ export const PROGRAMS: Program[] = [
   },
 {   id:9,
     tag: '일경험',
-    dDay: '2026-05-01',
+    dDay: 'D-10',
     title: '타이틀이 없으면 어떡해',
     org: '두더지땅굴 (사단법인 씨즈)',
     status: '모집 중',bg: 'var(--card-mint)',
