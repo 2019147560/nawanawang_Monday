@@ -83,7 +83,7 @@ export const PROGRAMS: Program[] = [
     org: '두더지땅굴 (사단법인 씨즈)',
     status: '모집 중',bg: 'var(--card-mint)',
     statusVariant: 'open',
-    // chips: ['모집 중', '강원', '온라인'],
+    chips: ['모집 중', '강원', '온라인'],
     weeks: '5주',
     deadline: '마감 2026-05-01',
     sourceUrl: 'https://dudug.kr/196',}
