@@ -84,9 +84,9 @@ export const PROGRAMS: Program[] = [
 
 // 기본 제공 데이터
 export const DEFAULT_DETAIL_DATA: ProgramDetail = {
-  intro: '아주 작은 외출에서 시작해, 또래와 함께 일상의 리듬을 천천히 되찾아가는 프로그램.',
+  intro: '아주 비작은 외출에서 시작해, 또래와 함께 일상의 리듬을 천천히 되찾아가는 프로그램.',
   description:
-    '집 밖으로 나오는 첫걸음에 필요한 것들을 함께 마련해, 점차 소그룹 활동으로 옮겨갑니다. 끝과 길이, 본인의 속도에 맞춰 천천히 진행됩니다.',
+    '집 밖으로 나오는 첫걸음에 필요한 것을 함께 마련해, 점차 소그룹 활동으로 옮겨갑니다. 끝과 길이, 본인의 속도에 맞춰 천천히 진행됩니다.',
   qualification:
     '현재 사회적 고립 또는 은둔 상태에 있는 만 19~34세 청년으로, 일상 회복과 관계 경험을 희망하는 분이면 누구나 신청 가능합니다. 학력, 경력, 소득은 관계없습니다.',
   curriculum: [
@@ -96,7 +96,7 @@ export const DEFAULT_DETAIL_DATA: ProgramDetail = {
     { weeks: '7~8주차', desc: '재입 활동 — 혼자 또는 또래와 함께 자율 활동 계획 및 실천' },
   ],
   org: {
-    name: '나와나망 청년재단',
+    name: '나와나왕 청년재단',
     region: '전국',
     phone: '02-XXXX-XXXX',
     kakao: '@나와나망',
