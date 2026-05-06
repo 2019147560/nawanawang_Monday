@@ -92,7 +92,7 @@ export const PROGRAMS: Program[] = [
       "청년",
       "서울",
       "오프라인"
-    ],
+    ],bg: 'var(--card-blue)',
     weeks: '',
     deadline: '',}
 ];
