@@ -81,9 +81,9 @@ export const PROGRAMS: Program[] = [
     dDay: '2026-05-01',
     title: '타이틀이 없으면 어떡해',
     org: '두더지땅굴 (사단법인 씨즈)',
-    status: '모집 중"',bg: 'var(--card-mint)',
+    status: '모집 중',bg: 'var(--card-mint)',
     statusVariant: 'open',
-    chips: [],
+    // chips: ['모집 중', '강원', '온라인'],
     weeks: '5주',
     deadline: '마감 2026-05-01',
     sourceUrl: 'https://dudug.kr/196',}
