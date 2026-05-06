@@ -80,7 +80,7 @@ export const PROGRAMS: Program[] = [
     weeks: '5주',
     deadline: '마감 2026-05-01',
   },
-  {
+  {id: 10,
     tag: "일경험",
     dDay: "",
     title: "[헌 옷 업사이클 키링 만들기 참여자 모집 안내]_[기지개컴퍼니_내부일경험 청년기획프로그램]",
