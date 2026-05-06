@@ -68,17 +68,17 @@ export const PROGRAMS: Program[] = [
     weeks: '8주 · 주 1회', deadline: '마감 2026.06.10',
     statusVariant: 'soon',
   },
-{   id:9,
-    tag: "일경험",
-    dDay: "2026-05-01",
-    title: "타이틀이 없으면 어떡해",
-    org: "두더지땅굴 (사단법인 씨즈)",
-    status: "모집 중",bg: 'var(--card-mint)',
-    statusVariant: "open",
-    chips: [],
-    weeks: "5주",
-    deadline: "마감 2026-05-01",
-    sourceUrl: "https://dudug.kr/196",}
+// {   id:9,
+//     tag: "일경험",
+//     dDay: "2026-05-01",
+//     title: "타이틀이 없으면 어떡해",
+//     org: "두더지땅굴 (사단법인 씨즈)",
+//     status: "모집 중",bg: 'var(--card-mint)',
+//     statusVariant: "open",
+//     chips: [],
+//     weeks: "5주",
+//     deadline: "마감 2026-05-01",
+//     sourceUrl: "https://dudug.kr/196",}
   
 ];
 
