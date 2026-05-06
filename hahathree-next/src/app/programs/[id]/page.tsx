@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Crumb from '@/components/Crumb';
 import { Icon } from '@/components/ui/Icon';
-import { PROGRAMS, DETAIL_DATA } from '@/lib/data';
+import { PROGRAMS, getDetailData } from '@/lib/data';
 
 interface Props {
   params: { id: string };
@@ -62,6 +62,9 @@ function SidebarRow({ label, value, last }: { label: string; value: string; last
 export default function ProgramDetailPage({ params }: Props) {
   const p = PROGRAMS.find(p => p.id === Number(params.id));
   if (!p) notFound();
+
+  // id에 따라 상세 데이터 가져오기
+  const DETAIL_DATA = getDetailData(Number(params.id));
 
   return (
     <main style={{ maxWidth: 1240, margin: '0 auto', padding: '0 32px 32px' }}>
@@ -132,7 +135,7 @@ export default function ProgramDetailPage({ params }: Props) {
               <div style={{ position: 'absolute', left: 4, top: 8, bottom: 8, width: 1, background: 'var(--line)' }} />
               {DETAIL_DATA.curriculum.map((c, i) => (
                 <div key={i} style={{ position: 'relative', marginBottom: i === DETAIL_DATA.curriculum.length - 1 ? 0 : 12 }}>
-                  <div style={{ position: 'absolute', left: -20, top: 18, width: 9, height: 9, borderRadius: '50%', background: 'var(--brand-500)', border: '2px solid #fff', boxShadow: '0 0 0 1px var(--brand-500)' }} />
+                  <div style={{ position: 'absolute', left: -20, top: 18, width: 9, height: 9, borderRadius: '50%', background: 'var(--brand-500)', border: '2px solid #fff', boxShadow: '0 0 0 1px var(--line)' }} />
                   <div style={{ border: '1px solid var(--line)', borderRadius: 10, padding: '14px 18px', background: '#fff' }}>
                     <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--brand-500)', marginBottom: 4 }}>{c.weeks}</div>
                     <div style={{ fontSize: 13, color: 'var(--ink-700)', lineHeight: 1.55 }}>{c.desc}</div>
