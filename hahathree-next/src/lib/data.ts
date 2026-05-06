@@ -86,7 +86,8 @@ export const PROGRAMS: Program[] = [
     chips: ['모집 중', '강원', '온라인'],
     weeks: '5주',
     deadline: '마감 2026-05-01',
-    sourceUrl: 'https://dudug.kr/196',}
+    //sourceUrl: 'https://dudug.kr/196',
+}
   
 ];
 
