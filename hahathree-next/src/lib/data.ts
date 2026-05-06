@@ -79,7 +79,21 @@ export const PROGRAMS: Program[] = [
     chips: ['모집 중', '강원', '온라인'],
     weeks: '5주',
     deadline: '마감 2026-05-01',
-  }
+  },
+  {
+    tag: "일경험",
+    dDay: "",
+    title: "[헌 옷 업사이클 키링 만들기 참여자 모집 안내]_[기지개컴퍼니_내부일경험 청년기획프로그램]",
+    org: "서울청년기지개센터",
+    status: "모집 중",
+    statusVariant: "open",
+    chips: [
+      "청년",
+      "서울",
+      "오프라인"
+    ],
+    weeks: "",
+    deadline: "",}
 ];
 
 // 기본 제공 데이터
