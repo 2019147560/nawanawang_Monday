@@ -67,36 +67,28 @@ export const PROGRAMS: Program[] = [
     chips: ['모집 예정', '강원', '온라인'],
     weeks: '8주 · 주 1회', deadline: '마감 2026.06.10',
     statusVariant: 'soon',
-  },  {
-    id: 9, tag: '온라인 모임', dDay: '곧오픈',
-    title: '게임으로 만나는 또래 살롱',
-    org: '강원 청년허브', status: '모집 예정',
-    bg: 'var(--card-mint)',
-    chips: ['모집 예정', '강원', '온라인'],
-    weeks: '8주 · 주 1회', deadline: '마감 2026.06.10',
-    statusVariant: 'soon',
   },
-{   id:9,
-    tag: '일경험',
+  {
+    id: 9, tag: '일경험',
     dDay: 'D-10',
     title: '타이틀이 없으면 어떡해',
     org: '두더지땅굴 (사단법인 씨즈)',
-    status: '모집 중',bg: 'var(--card-mint)',
+    status: '모집 중',
+    bg: 'var(--card-mint)',
     statusVariant: 'open',
     chips: ['모집 중', '강원', '온라인'],
     weeks: '5주',
     deadline: '마감 2026-05-01',
-    //sourceUrl: 'https://dudug.kr/196',
-}
-  
+  }
 ];
 
-export const DETAIL_DATA: ProgramDetail = {
-  intro: '아주 작은 외출에서 시작해, 또래와 함께 일상의 리듬을 천천히 되찾아가는 8주 프로그램.',
+// 기본 제공 데이터
+export const DEFAULT_DETAIL_DATA: ProgramDetail = {
+  intro: '아주 작은 외출에서 시작해, 또래와 함께 일상의 리듬을 천천히 되찾아가는 프로그램.',
   description:
-    '집 밖으로 나오는 첫걸음에 필요한 것들을 함께 마련해, 처음 4주는 1:1 동행으로 시작해 점차 소그룹 활동으로 옮겨갑니다. 끝과 길이, 본인의 속도에 맞춰 참여할 수 있어요.',
+    '집 밖으로 나오는 첫걸음에 필요한 것들을 함께 마련해, 점차 소그룹 활동으로 옮겨갑니다. 끝과 길이, 본인의 속도에 맞춰 천천히 진행됩니다.',
   qualification:
-    '현재 사회적 고립 또는 은둔 상태에 있는 만 19~34세 청년으로, 일상 회복과 관계 경험을 희망하는 분이면 누구나 신청 가능합니다. 학력, 경력, 소득 제한 없이 참여하실 수 있습니다.',
+    '현재 사회적 고립 또는 은둔 상태에 있는 만 19~34세 청년으로, 일상 회복과 관계 경험을 희망하는 분이면 누구나 신청 가능합니다. 학력, 경력, 소득은 관계없습니다.',
   curriculum: [
     { weeks: '1~2주차', desc: '1:1 동행 프로그램 — 메니저와 함께 가까운 장소 방문, 외출 연습' },
     { weeks: '3~4주차', desc: '소그룹 활동 진입 — 3~4명 소그룹으로 카페/공원 방문' },
@@ -104,14 +96,68 @@ export const DETAIL_DATA: ProgramDetail = {
     { weeks: '7~8주차', desc: '재입 활동 — 혼자 또는 또래와 함께 자율 활동 계획 및 실천' },
   ],
   org: {
-    name: '경기 청년재단',
-    region: '경기',
-    phone: '031-123-4567',
-    kakao: '@경기청년재단',
+    name: '나와나망 청년재단',
+    region: '전국',
+    phone: '02-XXXX-XXXX',
+    kakao: '@나와나망',
     homepage: 'https://open.kakao.com/example',
-    email: 'support@example.or.kr',
+    email: 'info@nananawang.or.kr',
   },
 };
+
+// ID별 상세 데이터 (필요시 추가)
+export const DETAIL_DATA_BY_ID: Record<number, ProgramDetail> = {
+  1: {
+    intro: '아주 작은 외출에서 시작해, 또래와 함께 일상의 리듬을 천천히 되찾아가는 8주 프로그램.',
+    description:
+      '집 밖으로 나오는 첫걸음에 필요한 것들을 함께 마련해, 처음 4주는 1:1 동행으로 시작해 점차 소그룹 활동으로 옮겨갑니다. 끝과 길이, 본인의 속도에 맞춰 천천히 진행됩니다.',
+    qualification:
+      '현재 사회적 고립 또는 은둔 상태에 있는 만 19~34세 청년으로, 일상 회복과 관계 경험을 희망하는 분이면 누구나 신청 가능합니다. 학력, 경력, 소득은 관계없습니다.',
+    curriculum: [
+      { weeks: '1~2주차', desc: '1:1 동행 프로그램 — 메니저와 함께 가까운 장소 방문, 외출 연습' },
+      { weeks: '3~4주차', desc: '소그룹 활동 진입 — 3~4명 소그룹으로 카페/공원 방문' },
+      { weeks: '5~6주차', desc: '문화 활동 체험 — 영화관, 전시회 등 문화공간 방문' },
+      { weeks: '7~8주차', desc: '재입 활동 — 혼자 또는 또래와 함께 자율 활동 계획 및 실천' },
+    ],
+    org: {
+      name: '경기 청년재단',
+      region: '경기',
+      phone: '031-123-4567',
+      kakao: '@경기청년재단',
+      homepage: 'https://open.kakao.com/example',
+      email: 'support@example.or.kr',
+    },
+  },
+  4: {
+    intro: '식물을 돌보며 나 자신도 함께 성장하는 8주 프로그램입니다.',
+    description:
+      '작은 식물부터 시작해 반려식물 키우는 경험을 통해 책임감과 성취감을 느끼고, 나를 돌보는 것의 소중함을 배웁니다. 함께 식물을 가꾸며 자신의 감정도 함께 정리하는 시간입니다.',
+    qualification:
+      '만 19~39세 청년누구나 참여 가능합니다. 식물 경험이 없어도 괜찮습니다. 식물 돌봄을 통해 자신을 돌보는 방법을 배우고 싶은 분들을 환영합니다.',
+    curriculum: [
+      { weeks: '1~2주차', desc: '식물 입문 — 식물의 종류와 기본 돌봄 방법 학습' },
+      { weeks: '3~4주차', desc: '반려식물 기르기 — 나만의 식물 선택하고 돌봄 시작' },
+      { weeks: '5~6주차', desc: '나와 식물 — 식물 돌봄과 자기 돌봄의 연결고리 찾기' },
+      { weeks: '7~8주차', desc: '함께 성장하기 — 공동 정원 조성 및 참여자 간 경험 나누기' },
+    ],
+    org: {
+      name: '부산 청년정책연구원',
+      region: '부산',
+      phone: '051-XXX-XXXX',
+      kakao: '@부산청년정책연구원',
+      homepage: 'https://open.kakao.com/example',
+      email: 'busan@example.or.kr',
+    },
+  },
+};
+
+// 유틸 함수: ID에 따른 DETAIL_DATA 가져오기
+export function getDetailData(id: number): ProgramDetail {
+  return DETAIL_DATA_BY_ID[id] || DEFAULT_DETAIL_DATA;
+}
+
+// 하위 호환성을 위한 기본 DETAIL_DATA
+export const DETAIL_DATA: ProgramDetail = DEFAULT_DETAIL_DATA;
 
 export const FILTER_OPTIONS: Record<string, string[]> = {
   region: ['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충청', '전라', '경상', '제주'],
