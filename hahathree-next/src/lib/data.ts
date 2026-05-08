@@ -384,7 +384,25 @@ export const DETAIL_DATA_BY_ID: Record<number, ProgramDetail> = {
       homepage: 'https://open.kakao.com/example',
       email: 'busan@example.or.kr',
     },
-  },
+  }, 11:{
+  intro: '2026년 두더잡 (Do The Job)   활동일지 작성 공간입니다.  전체 -- 1기 -- 김도디 다혜 담담 도민 미운오리 서리 설하 소연 수아 아카 안블루 이끼이끼 참치회 키캡 헤엄 Hyejin No\t제목\t글쓴',
+  description: '2026년 두더잡 (Do The Job)   활동일지 작성 공간입니다.  전체 -- 1기 -- 김도디 다혜 담담 도민 미운오리 서리 설하 소연 수아 아카 안블루 이끼이끼 참치회 키캡 헤엄 Hyejin No\t제목\t글쓴이\t작성시간\t조회수\t좋아요91\t4월 5주차 심수연 업무일지\t참치회\t2일전\t18\t090\t4월 4주차 심수연 업무일지\t참치회\t2일전\t8\t089\t4월 3주차 심수연 업무일지\t참치회\t2일전\t8\t088\t5월 1주차 담담 일지\t담담\t2일전\t6\t087\t4월 4주차 담담 일지\t담담\t2일전\t13\t086\t5월 1주차 _다혜_일경험 일기\t다혜\t2일전\t10\t085\t5월 1주차 이끼이끼 일경험 일기\t이끼이끼\t2일전\t14\t084\t4월 5주차_아카_업무일지\t아카\t2026-05-01\t37\t183\t4월 4주차_아카_업무일지\t아',
+  qualification: '',
+  curriculum: [
+    {
+      weeks: '5주차',
+      desc: '검색어 입력'
+    }
+  ],
+  org: {
+    name: '두더지땅굴 (사단법인 씨즈)',
+    region: '서울',
+    phone: '',
+    email: 'duduzi@seeds.or.kr',
+    kakao: '@두더지땅굴',
+    homepage: 'https://dudug.kr'
+  }
+}
 };
 
 // 유틸 함수: ID에 따른 DETAIL_DATA 가져오기
