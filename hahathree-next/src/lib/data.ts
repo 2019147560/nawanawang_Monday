@@ -126,18 +126,18 @@ export const PROGRAMS: Program[] = [
     weeks: '',
     deadline: ''
   },
-  // {id: 13,bg: 'var(--card-green)',
-  //   tag: '상담',
-  //   dDay: '',
-  //   title: '[부서연계] 서울시 청년마음건강 지원사업 연계',
-  //   org: '서울청년기지개센터',
-  //   status: '모집 중',
-  //   statusVariant: 'open',
-  //   chips: [
-  //     '청년',
-  //     '서울',
-  //     '온라인'
-  //   ],
+  {id: 13,bg: 'var(--card-green)',
+    tag: '상담',
+    dDay: '',
+    title: '[부서연계] 서울시 청년마음건강 지원사업 연계',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '청년',
+      '서울',
+      '온라인'
+    ],
   //   weeks: '2주',
   //   deadline: ''
   // },
