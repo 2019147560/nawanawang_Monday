@@ -95,7 +95,7 @@ export const PROGRAMS: Program[] = [
     ],bg: 'var(--card-blue)',
     weeks: '',
     deadline: '',},
-  [
+  
   {id: 11,bg: 'var(--card-green)',
     tag: '일경험',
     dDay: '',
