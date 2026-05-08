@@ -138,9 +138,9 @@ export const PROGRAMS: Program[] = [
       '서울',
       '온라인'
     ],
-  //   weeks: '2주',
-  //   deadline: ''
-  // },
+    weeks: '2주',
+    deadline: ''
+  },
   // {id: 14,bg: 'var(--card-green)',
   //   tag: '프로그램',
   //   dDay: '',
