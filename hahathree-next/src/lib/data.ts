@@ -94,7 +94,228 @@ export const PROGRAMS: Program[] = [
       "오프라인"
     ],bg: 'var(--card-blue)',
     weeks: '',
-    deadline: '',}
+    deadline: '',},
+  [
+  {id: 11,bg: 'var(--card-green)',
+    tag: '일경험',
+    dDay: '',
+    title: '[헌 옷 업사이클 키링 만들기 참여자 모집 안내]_[기지개컴퍼니_내부일경험 청년기획프로그램]',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '청년',
+      '서울',
+      '오프라인'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 12,bg: 'var(--card-green)',
+    tag: '자조모임',
+    dDay: '',
+    title: '루틴 형성 챌린지 ‘커리어 페이스메이커: 자기발견편’ 2기 모집',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '은둔·고립 청년',
+      '서울',
+      '온·오프라인'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 13,bg: 'var(--card-green)',
+    tag: '상담',
+    dDay: '',
+    title: '[부서연계] 서울시 청년마음건강 지원사업 연계',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '청년',
+      '서울',
+      '온라인'
+    ],
+    weeks: '2주',
+    deadline: ''
+  },
+  {id: 14,bg: 'var(--card-green)',
+    tag: '프로그램',
+    dDay: '',
+    title: 'Comment (0)',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '청년',
+      '서울'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 15,bg: 'var(--card-green)',
+    tag: '일경험',
+    dDay: '',
+    title: '청년 기획 [5월 감사공방: 한 송이, 마음의 온기]',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '청년',
+      '서울'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 16,bg: 'var(--card-green)',
+    tag: '회복 프로그램',
+    dDay: '',
+    title: '기지개 서포터즈 모집 안내',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '전체 신청 가능',
+      '서울'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 17,bg: 'var(--card-green)',
+    tag: '자조모임',
+    dDay: '',
+    title: '루틴 형성 챌린지(일상회복) 2기 ‘위로의 순간’ 참여자모집',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '은둔·고립 청년',
+      '서울',
+      '온·오프라인'
+    ],
+    weeks: '2주',
+    deadline: ''
+  },
+  {id: 18,bg: 'var(--card-green)',
+    tag: '자조모임',
+    dDay: '',
+    title: '루틴 형성 챌린지(일상회복) 프로그램 참여자 모집',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '청년',
+      '서울',
+      '온·오프라인'
+    ],
+    weeks: '2주',
+    deadline: ''
+  },
+  {id: 19,bg: 'var(--card-green)',
+    tag: '자조모임',
+    dDay: '',
+    title: '루틴 형성 챌린지 <커리어 페이스메이커: 자기발견편> 1기 모집',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '청년',
+      '서울',
+      '온·오프라인'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 20,bg: 'var(--card-green)',
+    tag: '프로그램',
+    dDay: '',
+    title: '청년플랜브릿지 참여자 모집',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '청년',
+      '서울'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 21,bg: 'var(--card-green)',
+    tag: '일경험',
+    dDay: '',
+    title: '[기지개컴퍼니] 일경험 프로그램 사전 설명회 모집',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '청년',
+      '서울'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 22,bg: 'var(--card-green)',
+    tag: '상담',
+    dDay: '',
+    title: '마음돌봄PG: 마음이음데이 \'마음 이음 콘서트\' 신청',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '전체 신청 가능',
+      '서울',
+      '온·오프라인'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 23,bg: 'var(--card-green)',
+    tag: '상담',
+    dDay: '',
+    title: '[마음돌봄 프로그램] 마음 이음 특강 신청',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '전체 신청 가능',
+      '서울',
+      '온·오프라인'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 24,bg: 'var(--card-green)',
+    tag: '상담',
+    dDay: '마감',
+    title: 'Comment (0)',
+    org: '서울청년기지개센터',
+    status: '마감',
+    statusVariant: 'closed',
+    chips: [
+      '마감',
+      '청년',
+      '서울',
+      '오프라인'
+    ],
+    weeks: '',
+    deadline: '마감'
+  },
+  {id: 25,bg: 'var(--card-green)',
+    tag: '프로그램',
+    dDay: '',
+    title: '11월 우리집 홈파티',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '서울'
+    ],
+    weeks: '',
+    deadline: ''
+  }
+]
 ];
 
 // 기본 제공 데이터
