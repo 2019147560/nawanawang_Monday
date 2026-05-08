@@ -315,7 +315,7 @@ export const PROGRAMS: Program[] = [
     weeks: '',
     deadline: ''
   }
-]
+
 ];
 
 // 기본 제공 데이터
