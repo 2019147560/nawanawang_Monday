@@ -96,7 +96,7 @@ export const PROGRAMS: Program[] = [
     weeks: '',
     deadline: '',},
   
-  {id: 11,bg: 'var(--card-green)',
+  {id: 11,bg: 'var(--card-mint)',
     tag: '일경험',
     dDay: '',
     title: '[헌 옷 업사이클 키링 만들기 참여자 모집 안내]_[기지개컴퍼니_내부일경험 청년기획프로그램]',
@@ -111,7 +111,7 @@ export const PROGRAMS: Program[] = [
     weeks: '',
     deadline: ''
   },
-  {id: 12,bg: 'var(--card-green)',
+  {id: 12,bg: 'var(--card-mint)',
     tag: '자조모임',
     dDay: '',
     title: '루틴 형성 챌린지 ‘커리어 페이스메이커: 자기발견편’ 2기 모집',
@@ -126,7 +126,7 @@ export const PROGRAMS: Program[] = [
     weeks: '',
     deadline: ''
   },
-  {id: 13,bg: 'var(--card-green)',
+  {id: 13,bg: 'var(--card-mint)',
     tag: '상담',
     dDay: '',
     title: '[부서연계] 서울시 청년마음건강 지원사업 연계',
@@ -141,63 +141,63 @@ export const PROGRAMS: Program[] = [
     weeks: '2주',
     deadline: ''
   },
-  // {id: 14,bg: 'var(--card-green)',
-  //   tag: '프로그램',
-  //   dDay: '',
-  //   title: 'Comment (0)',
-  //   org: '서울청년기지개센터',
-  //   status: '모집 중',
-  //   statusVariant: 'open',
-  //   chips: [
-  //     '청년',
-  //     '서울'
-  //   ],
-  //   weeks: '',
-  //   deadline: ''
-  // },
-  // {id: 15,bg: 'var(--card-green)',
-  //   tag: '일경험',
-  //   dDay: '',
-  //   title: '청년 기획 [5월 감사공방: 한 송이, 마음의 온기]',
-  //   org: '서울청년기지개센터',
-  //   status: '모집 중',
-  //   statusVariant: 'open',
-  //   chips: [
-  //     '청년',
-  //     '서울'
-  //   ],
-  //   weeks: '',
-  //   deadline: ''
-  // },
-  // {id: 16,bg: 'var(--card-green)',
-  //   tag: '회복 프로그램',
-  //   dDay: '',
-  //   title: '기지개 서포터즈 모집 안내',
-  //   org: '서울청년기지개센터',
-  //   status: '모집 중',
-  //   statusVariant: 'open',
-  //   chips: [
-  //     '전체 신청 가능',
-  //     '서울'
-  //   ],
-  //   weeks: '',
-  //   deadline: ''
-  // },
-  // {id: 17,bg: 'var(--card-green)',
-  //   tag: '자조모임',
-  //   dDay: '',
-  //   title: '루틴 형성 챌린지(일상회복) 2기 ‘위로의 순간’ 참여자모집',
-  //   org: '서울청년기지개센터',
-  //   status: '모집 중',
-  //   statusVariant: 'open',
-  //   chips: [
-  //     '은둔·고립 청년',
-  //     '서울',
-  //     '온·오프라인'
-  //   ],
-  //   weeks: '2주',
-  //   deadline: ''
-  // },
+  {id: 14,bg: 'var(--card-mint)',
+    tag: '프로그램',
+    dDay: '',
+    title: 'Comment (0)',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '청년',
+      '서울'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 15,bg: 'var(--card-mint)',
+    tag: '일경험',
+    dDay: '',
+    title: '청년 기획 [5월 감사공방: 한 송이, 마음의 온기]',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '청년',
+      '서울'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 16,bg: 'var(--card-mint)',
+    tag: '회복 프로그램',
+    dDay: '',
+    title: '기지개 서포터즈 모집 안내',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '전체 신청 가능',
+      '서울'
+    ],
+    weeks: '',
+    deadline: ''
+  },
+  {id: 17,bg: 'var(--card-mint)',
+    tag: '자조모임',
+    dDay: '',
+    title: '루틴 형성 챌린지(일상회복) 2기 ‘위로의 순간’ 참여자모집',
+    org: '서울청년기지개센터',
+    status: '모집 중',
+    statusVariant: 'open',
+    chips: [
+      '은둔·고립 청년',
+      '서울',
+      '온·오프라인'
+    ],
+    weeks: '2주',
+    deadline: ''
+  },
   // {id: 18,bg: 'var(--card-green)',
   //   tag: '자조모임',
   //   dDay: '',
