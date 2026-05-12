@@ -418,7 +418,7 @@ export default function HomePage() {
 
       {filtered.length === 0 && (
         <div style={{ padding: '80px 0', textAlign: 'center', color: 'var(--ink-500)', fontSize: 14 }}>
-          조건에 맞는 사업이 없어요. 필터를 조정해보세요.
+          조건에 맞는 사업이 없어요. 필터를 조정해보실래요?
         </div>
       )}
 
