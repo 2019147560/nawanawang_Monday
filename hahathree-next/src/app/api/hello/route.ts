@@ -7,8 +7,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from('Hello')
+      const { data, error } = await supabase
+      .from('Hello') // 테이블명 대소문자 유지
       .select('hello')
       .limit(1);
 
