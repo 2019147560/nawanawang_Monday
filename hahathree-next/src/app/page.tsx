@@ -308,18 +308,38 @@ function Pagination({ page, setPage, total }: { page: number; setPage: (n: numbe
 /* ── SupabaseHello ── */
 function SupabaseHello() {
   const [helloText, setHelloText] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/hello');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+        
         const data = await response.json();
-        if (data.hello) {
-          setHelloText(data.hello);
+        
+        // 에러가 응답에 포함된 경우
+        if (data.error) {
+          console.error('❌ Supabase RPC Error:', data.error);
+          setErrorMessage(data.error);
+          setHelloText(null);
+        } else if (data && Array.isArray(data) && data.length > 0 && data[0].hello) {
+          setHelloText(data[0].hello);
+          setErrorMessage(null);
+        } else {
+          console.log('No data received');
+          setHelloText(null);
+          setErrorMessage(null);
         }
       } catch (error) {
-        console.error('Failed to fetch hello data:', error);
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        console.error('❌ API Fetch Error:', errorMsg);
+        setErrorMessage(errorMsg);
+        setHelloText(null);
       } finally {
         setLoading(false);
       }
@@ -330,8 +350,24 @@ function SupabaseHello() {
 
   if (loading) {
     return (
-      <div style={{ padding: '20px', color: 'var(--ink-500)' }}>
+      <div style={{ padding: '20px', color: 'var(--ink-500)', textAlign: 'center' }}>
         로딩 중...
+      </div>
+    );
+  }
+
+  // 에러가 있는 경우
+  if (errorMessage) {
+    return (
+      <div style={{ 
+        padding: '20px 0', 
+        borderTop: '1px solid var(--line)', 
+        marginTop: 32,
+        color: '#ef4444',
+        fontWeight: 600,
+        fontSize: 14,
+      }}>
+        ❌ Error: {errorMessage}
       </div>
     );
   }
@@ -398,7 +434,7 @@ export default function HomePage() {
           전체 <strong style={{ color: 'var(--ink-900)', fontWeight: 700 }}>{filtered.length}</strong>건
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <select value={sort} onChange={e => setSort(e.target.value)} style={{ height: 34, border: '1px solid var(--line)', borderRadius: 8, padding: '0 10px 0 12px', fontSize: 12, color: 'var(--ink-700)', fontFamily: 'inherit' }}>
+          <select value={sort} onChange={e => setSort(e.target.value)} style={{ height: 34, border: '1px solid var(--line)', borderRadius: 8, padding: '0 10px 0 12px', fontSize: 12, color: 'var(--ink-700)', background: '#fff', fontFamily: 'inherit' }}>
             <option>추천순</option><option>마감 임박순</option><option>최신순</option>
           </select>
           <div style={{ display: 'inline-flex', border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
