@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import ReviewStrip from '@/components/ReviewStrip';
@@ -305,6 +305,46 @@ function Pagination({ page, setPage, total }: { page: number; setPage: (n: numbe
   );
 }
 
+/* ── SupabaseHello ── */
+function SupabaseHello() {
+  const [helloText, setHelloText] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/hello');
+        const data = await response.json();
+        if (data.hello) {
+          setHelloText(data.hello);
+        }
+      } catch (error) {
+        console.error('Failed to fetch hello data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ padding: '20px', color: 'var(--ink-500)' }}>
+        로딩 중...
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: '20px 0', borderTop: '1px solid var(--line)', marginTop: 32 }}>
+      <span style={{ color: '#0066cc', fontWeight: 600, fontSize: 16 }}>
+        {helloText || 'No data'}
+      </span>
+    </div>
+  );
+}
+
 /* ── Page ── */
 export default function HomePage() {
   const [filters, setFilters] = useState<FilterValues>({ region: [], level: [], mode: [], period: [], status: [], people: [] });
@@ -358,7 +398,7 @@ export default function HomePage() {
           전체 <strong style={{ color: 'var(--ink-900)', fontWeight: 700 }}>{filtered.length}</strong>건
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <select value={sort} onChange={e => setSort(e.target.value)} style={{ height: 34, border: '1px solid var(--line)', borderRadius: 8, padding: '0 10px 0 12px', fontSize: 12, color: 'var(--ink-700)', background: '#fff', fontFamily: 'inherit', minWidth: 120 }}>
+          <select value={sort} onChange={e => setSort(e.target.value)} style={{ height: 34, border: '1px solid var(--line)', borderRadius: 8, padding: '0 10px 0 12px', fontSize: 12, color: 'var(--ink-700)', fontFamily: 'inherit' }}>
             <option>추천순</option><option>마감 임박순</option><option>최신순</option>
           </select>
           <div style={{ display: 'inline-flex', border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' }}>
@@ -383,6 +423,8 @@ export default function HomePage() {
       )}
 
       {filtered.length > 0 && <Pagination page={page} setPage={setPage} total={3} />}
+
+      <SupabaseHello />
     </main>
   );
 }
