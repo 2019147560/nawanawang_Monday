@@ -33,7 +33,7 @@ function Hero() {
           2026년 청년 자립 지원 프로그램 모집
         </h2>
         <p style={{ marginTop: 12, marginBottom: 22, fontSize: 14, color: 'var(--ink-600)', lineHeight: 1.6, letterSpacing: '-0.01em' }}>
-          고립·은둔청년을 위한 맞춤형 지원 프로그램이 시작됩니다. 주거, 일자리, 심리상담까지 종합 지원
+          고립·은둔청년을 위한 맞춤형 지원 프로그램이 시작됩니다. 주거, 일자리, 심리상담까지 종합 지원!
         </p>
         <button style={{
           background: 'var(--ink-900)', color: '#fff', border: 'none',
