@@ -348,37 +348,53 @@ function SupabaseHello() {
     fetchData();
   }, []);
 
-  if (loading) {
-    return (
-      <div style={{ padding: '20px', color: 'var(--ink-500)', textAlign: 'center' }}>
-        로딩 중...
-      </div>
-    );
-  }
-
-  // 에러가 있는 경우
-  if (errorMessage) {
-    return (
-      <div style={{ 
-        padding: '20px 0', 
-        borderTop: '1px solid var(--line)', 
-        marginTop: 32,
-        color: '#ef4444',
-        fontWeight: 600,
-        fontSize: 14,
-      }}>
-        ❌ Error: {errorMessage}
-      </div>
-    );
-  }
-
+if (loading) {
   return (
-    <div style={{ padding: '20px 0', borderTop: '1px solid var(--line)', marginTop: 32 }}>
-      <span style={{ color: '#0066cc', fontWeight: 600, fontSize: 16 }}>
-        {helloText || 'No data'}
-      </span>
+    <div style={{ padding: '20px', color: 'var(--ink-500)', textAlign: 'center' }}>
+      로딩 중...
     </div>
   );
+}
+
+// 에러가 있으면 무조건 표시
+if (errorMessage) {
+  return (
+    <div style={{
+      padding: '20px 0',
+      borderTop: '1px solid var(--line)',
+      marginTop: 32,
+      color: '#ef4444',
+      fontWeight: 600,
+      fontSize: 14,
+    }}>
+      ❌ Error: {errorMessage}
+    </div>
+  );
+}
+
+// 데이터 없을 때도 에러 우선 유지 구조
+if (!helloText) {
+  return (
+    <div style={{
+      padding: '20px 0',
+      borderTop: '1px solid var(--line)',
+      marginTop: 32,
+      color: '#ef4444',
+      fontWeight: 600,
+      fontSize: 14,
+    }}>
+      ❌ Error: No data received from API
+    </div>
+  );
+}
+
+return (
+  <div style={{ padding: '20px 0', borderTop: '1px solid var(--line)', marginTop: 32 }}>
+    <span style={{ color: '#0066cc', fontWeight: 600, fontSize: 16 }}>
+      {helloText}
+    </span>
+  </div>
+);
 }
 
 /* ── Page ── */
