@@ -10,8 +10,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from('Hello')
       .select('hello')
-      .limit(1)
-      .single();
+      .limit(1);
 
     if (error) {
       console.error('Supabase error:', error);
