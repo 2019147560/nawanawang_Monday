@@ -8,7 +8,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export async function GET() {
   try {
     const { data, error } = await supabase
-      .from('hello')
+      .from('Hello')
       .select('hello')
       .limit(1)
       .single();
