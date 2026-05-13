@@ -192,7 +192,7 @@ function FilterBar({ values, onChange, onReset, query, setQuery, onSearch }: {
 }
 
 /* ── ProgramCard ── */
-function ProgramCard({ p }: { p: Program) {
+function ProgramCard({ p }: { p: Program}) {
   const [hover, setHover] = useState(false);
 
   const dDayBg = p.dDay === '마감' || p.dDay === '곧오픈' ? '#fff' : 'var(--brand-500)';
