@@ -387,7 +387,7 @@ return (
 export default function HomePage() {
   //const [filters, setFilters] = useState<FilterValues>({ region: [], level: [], mode: [], period: [], status: [], people: [] });
   // 변경: 위에 programs 상태 추가
-const [programs, setPrograms] = useState<Program[]>([]);
+// const [programs, setPrograms] = useState<Program[]>([]);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [view, setView] = useState<'grid' | 'list'>('grid');
@@ -451,7 +451,7 @@ const [programs, setPrograms] = useState<Program[]>([]);
 
       {view === 'grid' ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 18, marginTop: 18 }}>
-          /* {filtered.map(p => <ProgramCard key={p.id} p={p} />)} */
+           {filtered.map(p => <ProgramCard key={p.id} p={p} />)} 
         </div>
       ) : (
         <ListView programs={filtered} />
