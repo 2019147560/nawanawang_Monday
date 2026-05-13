@@ -8,8 +8,9 @@ import ReviewStrip from '@/components/ReviewStrip';
 // 변경
 import { FILTERS, FILTER_OPTIONS, REVIEWS } from '@/lib/data';
 import { fetchPrograms } from '@/lib/fetchPrograms';
+import type { Program, FilterValues } from '@/types';
 
-import type { FilterValues } from '@/types';
+ 
 
 /* ── Hero ── */
 function Hero() {
