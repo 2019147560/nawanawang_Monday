@@ -395,6 +395,10 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<FilterValues>({ region: [], level: [], mode: [], period: [], status: [], people: [] });
   const [sort, setSort] = useState('추천순');
+    // ✅ 이거 추가
+  useEffect(() => {
+    fetchPrograms().then(setPrograms).catch(console.error);
+  }, []);
 
   const handleFilter = (k: string, v: string[]) => { setFilters(f => ({ ...f, [k]: v })); setPage(1); };
   const reset = () => { setFilters({ region: [], level: [], mode: [], period: [], status: [], people: [] }); setQuery(''); setAppliedQuery(''); setPage(1); };
