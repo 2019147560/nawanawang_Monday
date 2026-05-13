@@ -388,7 +388,7 @@ return (
 export default function HomePage() {
   //const [filters, setFilters] = useState<FilterValues>({ region: [], level: [], mode: [], period: [], status: [], people: [] });
   // 변경: 위에 programs 상태 추가
-//const [programs, setPrograms] = useState<Program[]>([]);
+const [programs, setPrograms] = useState<Program[]>([]);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [view, setView] = useState<'grid' | 'list'>('grid');
