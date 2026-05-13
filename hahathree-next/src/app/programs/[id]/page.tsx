@@ -3,23 +3,17 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Crumb from '@/components/Crumb';
 import { Icon } from '@/components/ui/Icon';
-//import { PROGRAMS, getDetailData } from '@/lib/data';
-// 변경
 import { fetchPrograms, fetchProgramDetail } from '@/lib/fetchPrograms';
+
 interface Props {
   params: { id: string };
 }
 
-// export function generateStaticParams() {
-//   return PROGRAMS.map(p => ({ id: String(p.id) }));
-// }
-// 변경
 export async function generateStaticParams() {
   const programs = await fetchPrograms();
   return programs.map(p => ({ id: String(p.id) }));
 }
 
-// 변경
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const programs = await fetchPrograms();
   const p = programs.find(p => p.id === Number(params.id));
@@ -62,23 +56,22 @@ function SidebarRow({ label, value, last }: { label: string; value: string; last
       padding: '10px 0', borderBottom: last ? 'none' : '1px solid var(--line-2)',
     }}>
       <dt style={{ color: 'var(--ink-500)', fontSize: 12, fontWeight: 500 }}>{label}</dt>
-      <dd style={{ margin: 0, color: 'var(--ink-900)', fontSize: 13, fontWeight: 700 }}>{value}</dd>
+      <dd style={{ margin: 0, color: 'var(--ink-900)', fontSize: 13, fontWeight: 700 }}>{value || '—'}</dd>
     </div>
   );
 }
 
-// export default function ProgramDetailPage({ params }: Props) {
-//   const p = PROGRAMS.find(p => p.id === Number(params.id));
-//   if (!p) notFound();
-
-//   // id에 따라 상세 데이터 가져오기
-//   const DETAIL_DATA = getDetailData(Number(params.id));
-// 변경
 export default async function ProgramDetailPage({ params }: Props) {
   const programs = await fetchPrograms();
   const p = programs.find(p => p.id === Number(params.id));
   if (!p) notFound();
+
   const DETAIL_DATA = await fetchProgramDetail(Number(params.id));
+
+  // 신청 버튼 링크: homepage 있으면 외부링크, 없으면 내부 apply 페이지
+  const applyHref = DETAIL_DATA.org.homepage || `/programs/${p.id}/apply`;
+  const isExternal = !!DETAIL_DATA.org.homepage;
+
   return (
     <main style={{ maxWidth: 1240, margin: '0 auto', padding: '0 32px 32px' }}>
       <Crumb items={[
@@ -100,76 +93,101 @@ export default async function ProgramDetailPage({ params }: Props) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 32 }}>
         {/* Left */}
         <div>
-          <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-            {p.chips.map((c, i) => (
-              <span key={i} style={{
-                background: i === 0 ? '#e6f4ec' : '#f3f4f7',
-                color: i === 0 ? '#1f7a4d' : 'var(--ink-700)',
-                padding: '5px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-              }}>{c}</span>
-            ))}
-            <span style={{ background: '#f3f4f7', color: 'var(--ink-700)', padding: '5px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600 }}>회복 프로그램</span>
-          </div>
+          {/* chips */}
+          {p.chips.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
+              {p.chips.map((c, i) => (
+                <span key={i} style={{
+                  background: i === 0 ? '#e6f4ec' : '#f3f4f7',
+                  color: i === 0 ? '#1f7a4d' : 'var(--ink-700)',
+                  padding: '5px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600,
+                }}>{c}</span>
+              ))}
+            </div>
+          )}
 
           <h1 style={{ margin: 0, fontSize: 32, fontWeight: 800, color: 'var(--ink-900)', letterSpacing: '-0.03em', lineHeight: 1.3 }}>
             {p.title.replace('\n', ', ')}
           </h1>
-          <p style={{ marginTop: 12, marginBottom: 28, fontSize: 14, color: 'var(--ink-600)', lineHeight: 1.6 }}>
-            {DETAIL_DATA.intro}
-          </p>
 
+          {/* intro */}
+          {DETAIL_DATA.intro && (
+            <p style={{ marginTop: 12, marginBottom: 28, fontSize: 14, color: 'var(--ink-600)', lineHeight: 1.6 }}>
+              {DETAIL_DATA.intro}
+            </p>
+          )}
+
+          {/* 기본 정보 테이블 */}
           <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden', fontSize: 13, marginBottom: 32 }}>
             <tbody>
               <tr>
-                <th style={tableTh}>주관 기관</th><td style={tableTd}>{DETAIL_DATA.org.name}</td>
-                <th style={tableTh}>진행 지역</th><td style={tableTd}>{DETAIL_DATA.org.region}</td>
+                <th style={tableTh}>주관 기관</th>
+                <td style={tableTd}>{DETAIL_DATA.org.name || p.org}</td>
+                <th style={tableTh}>진행 지역</th>
+                <td style={tableTd}>{DETAIL_DATA.org.region || '—'}</td>
               </tr>
               <tr>
-                <th style={tableTh}>진행 형태</th><td style={tableTd}>온·오프라인</td>
-                <th style={tableTh}>참여 기간</th><td style={tableTd}>{p.weeks}</td>
+                <th style={tableTh}>진행 형태</th>
+                <td style={tableTd}>{p.chips.find(c => c.includes('온') || c.includes('오프')) || '—'}</td>
+                <th style={tableTh}>참여 기간</th>
+                <td style={tableTd}>{p.weeks || '—'}</td>
               </tr>
               <tr>
-                <th style={tableTh}>신청 마감</th><td style={tableTd}>{p.deadline.replace('마감 ', '')}</td>
-                <th style={tableTh}>모집 인원</th><td style={tableTd}>12명</td>
+                <th style={tableTh}>신청 마감</th>
+                <td style={tableTd}>{p.deadline ? p.deadline.replace('마감 ', '') : '—'}</td>
+                <th style={tableTh}>모집 상태</th>
+                <td style={tableTd}>{p.status || '—'}</td>
               </tr>
             </tbody>
           </table>
 
-          <DetailSection title="프로그램 소개">
-            <p style={{ margin: 0, fontSize: 14, color: 'var(--ink-700)', lineHeight: 1.75 }}>{DETAIL_DATA.description}</p>
-          </DetailSection>
+          {/* 프로그램 소개 */}
+          {DETAIL_DATA.description && (
+            <DetailSection title="프로그램 소개">
+              <p style={{ margin: 0, fontSize: 14, color: 'var(--ink-700)', lineHeight: 1.75 }}>{DETAIL_DATA.description}</p>
+            </DetailSection>
+          )}
 
-          <DetailSection title="신청자격">
-            <p style={{ margin: 0, fontSize: 14, color: 'var(--ink-700)', lineHeight: 1.75 }}>{DETAIL_DATA.qualification}</p>
-          </DetailSection>
+          {/* 신청자격 */}
+          {DETAIL_DATA.qualification && (
+            <DetailSection title="신청자격">
+              <p style={{ margin: 0, fontSize: 14, color: 'var(--ink-700)', lineHeight: 1.75 }}>{DETAIL_DATA.qualification}</p>
+            </DetailSection>
+          )}
 
-          <DetailSection title="사업 커리큘럼">
-            <div style={{ position: 'relative', paddingLeft: 20 }}>
-              <div style={{ position: 'absolute', left: 4, top: 8, bottom: 8, width: 1, background: 'var(--line)' }} />
-              {DETAIL_DATA.curriculum.map((c, i) => (
-                <div key={i} style={{ position: 'relative', marginBottom: i === DETAIL_DATA.curriculum.length - 1 ? 0 : 12 }}>
-                  <div style={{ position: 'absolute', left: -20, top: 18, width: 9, height: 9, borderRadius: '50%', background: 'var(--brand-500)', border: '2px solid #fff', boxShadow: '0 0 0 1px var(--line)' }} />
-                  <div style={{ border: '1px solid var(--line)', borderRadius: 10, padding: '14px 18px', background: '#fff' }}>
-                    <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--brand-500)', marginBottom: 4 }}>{c.weeks}</div>
-                    <div style={{ fontSize: 13, color: 'var(--ink-700)', lineHeight: 1.55 }}>{c.desc}</div>
+          {/* 커리큘럼 - 데이터 있을 때만 표시 */}
+          {DETAIL_DATA.curriculum.length > 0 && (
+            <DetailSection title="사업 커리큘럼">
+              <div style={{ position: 'relative', paddingLeft: 20 }}>
+                <div style={{ position: 'absolute', left: 4, top: 8, bottom: 8, width: 1, background: 'var(--line)' }} />
+                {DETAIL_DATA.curriculum.map((c, i) => (
+                  <div key={i} style={{ position: 'relative', marginBottom: i === DETAIL_DATA.curriculum.length - 1 ? 0 : 12 }}>
+                    <div style={{ position: 'absolute', left: -20, top: 18, width: 9, height: 9, borderRadius: '50%', background: 'var(--brand-500)', border: '2px solid #fff', boxShadow: '0 0 0 1px var(--line)' }} />
+                    <div style={{ border: '1px solid var(--line)', borderRadius: 10, padding: '14px 18px', background: '#fff' }}>
+                      <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--brand-500)', marginBottom: 4 }}>{c.weeks}</div>
+                      <div style={{ fontSize: 13, color: 'var(--ink-700)', lineHeight: 1.55 }}>{c.desc}</div>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </DetailSection>
+                ))}
+              </div>
+            </DetailSection>
+          )}
 
-          <div style={{ background: '#fafbfc', border: '1px solid var(--line)', borderRadius: 12, padding: '22px 26px', marginTop: 16 }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 700, color: 'var(--ink-900)', paddingBottom: 14, borderBottom: '1px solid var(--line)' }}>기관 및 문의 정보</h3>
-            <div style={{ fontSize: 12, color: 'var(--ink-500)', marginBottom: 4 }}>주최·주관 기관</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink-900)', marginBottom: 16 }}>{DETAIL_DATA.org.name}</div>
-            <div style={{ fontSize: 12, color: 'var(--ink-500)', marginBottom: 8 }}>문의 창구</div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 13, display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--ink-700)' }}>
-              <li>📞 {DETAIL_DATA.org.phone}</li>
-              <li>💬 카카오톡: {DETAIL_DATA.org.kakao}</li>
-              <li>🔗 오픈채팅: {DETAIL_DATA.org.homepage}</li>
-              <li>✉ {DETAIL_DATA.org.email}</li>
-            </ul>
-          </div>
+          {/* 기관 문의 정보 */}
+          {(DETAIL_DATA.org.name || DETAIL_DATA.org.phone || DETAIL_DATA.org.kakao || DETAIL_DATA.org.email) && (
+            <div style={{ background: '#fafbfc', border: '1px solid var(--line)', borderRadius: 12, padding: '22px 26px', marginTop: 16 }}>
+              <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 700, color: 'var(--ink-900)', paddingBottom: 14, borderBottom: '1px solid var(--line)' }}>기관 및 문의 정보</h3>
+              <div style={{ fontSize: 12, color: 'var(--ink-500)', marginBottom: 4 }}>주최·주관 기관</div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink-900)', marginBottom: 16 }}>{DETAIL_DATA.org.name || p.org}</div>
+              <div style={{ fontSize: 12, color: 'var(--ink-500)', marginBottom: 8 }}>문의 창구</div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 13, display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--ink-700)' }}>
+                {DETAIL_DATA.org.phone && <li>📞 {DETAIL_DATA.org.phone}</li>}
+                {DETAIL_DATA.org.kakao && <li>💬 카카오톡: {DETAIL_DATA.org.kakao}</li>}
+                {DETAIL_DATA.org.homepage && <li>🔗 홈페이지: <a href={DETAIL_DATA.org.homepage} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--brand-500)' }}>{DETAIL_DATA.org.homepage}</a></li>}
+                {DETAIL_DATA.org.email && <li>✉ {DETAIL_DATA.org.email}</li>}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Right: sticky sidebar */}
@@ -177,21 +195,35 @@ export default async function ProgramDetailPage({ params }: Props) {
           <div style={{ position: 'sticky', top: 96, border: '1px solid var(--line)', borderRadius: 12, padding: 22, background: '#fff' }}>
             <dl style={{ margin: 0, fontSize: 13 }}>
               <SidebarRow label="기간" value={p.weeks} />
-              <SidebarRow label="진행 형태" value="온·오프라인" />
-              <SidebarRow label="지역" value="경기" />
-              <SidebarRow label="신청 마감" value={p.deadline.replace('마감 ', '')} last />
+              <SidebarRow label="진행 형태" value={p.chips.find(c => c.includes('온') || c.includes('오프')) || '—'} />
+              <SidebarRow label="지역" value={DETAIL_DATA.org.region || p.chips.find(c => !c.includes('신청') && !c.includes('온') && !c.includes('오프') && !c.includes('마감')) || '—'} />
+              <SidebarRow label="신청 마감" value={p.deadline ? p.deadline.replace('마감 ', '') : '—'} last />
             </dl>
 
-            <Link href={`/programs/${p.id}/apply`}>
-              <button style={{
-                width: '100%', height: 48, marginTop: 16,
-                background: 'var(--brand-500)', color: '#fff', border: 'none',
-                borderRadius: 8, fontWeight: 700, fontSize: 14,
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              }}>
-                신청페이지로 바로가기 <Icon.ChevronR width={14} height={14} />
-              </button>
-            </Link>
+            {/* 신청버튼: homepage 있으면 외부링크, 없으면 내부 apply */}
+            {isExternal ? (
+              <a href={applyHref} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textDecoration: 'none' }}>
+                <button style={{
+                  width: '100%', height: 48, marginTop: 16,
+                  background: 'var(--brand-500)', color: '#fff', border: 'none',
+                  borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: 'pointer',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                }}>
+                  신청페이지로 바로가기 <Icon.ChevronR width={14} height={14} />
+                </button>
+              </a>
+            ) : (
+              <Link href={applyHref}>
+                <button style={{
+                  width: '100%', height: 48, marginTop: 16,
+                  background: 'var(--brand-500)', color: '#fff', border: 'none',
+                  borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: 'pointer',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                }}>
+                  신청페이지로 바로가기 <Icon.ChevronR width={14} height={14} />
+                </button>
+              </Link>
+            )}
 
             <div style={{
               marginTop: 12, padding: '14px 16px',
