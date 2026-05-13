@@ -4,7 +4,6 @@ import type { Program, ProgramDetail } from '@/types';
 
 // ─── Programs + Chips ───────────────────────────────────────────
 export async function fetchPrograms(): Promise<Program[]> {
-  // programs 테이블
   const { data: programs, error } = await supabase
     .from('programs')
     .select('*')
@@ -12,18 +11,16 @@ export async function fetchPrograms(): Promise<Program[]> {
 
   if (error) throw error;
 
-  // program_chips 테이블
   const { data: chips, error: chipsError } = await supabase
     .from('program_chips')
     .select('program_id, chip');
 
   if (chipsError) throw chipsError;
 
-  // chips를 program_id 기준으로 묶어서 Program에 합치기
   return programs.map((p) => ({
     id: p.id,
     tag: p.tag,
-    dDay: p.d_day,           // DB 컬럼명 → camelCase 변환
+    dDay: p.d_day,
     title: p.title,
     org: p.org,
     status: p.status,
@@ -39,37 +36,37 @@ export async function fetchPrograms(): Promise<Program[]> {
 
 // ─── Program Detail (상세 + 커리큘럼) ────────────────────────────
 export async function fetchProgramDetail(id: number): Promise<ProgramDetail> {
+  // maybeSingle() — 데이터 없어도 에러 대신 null 반환
   const { data: detail, error } = await supabase
     .from('program_details')
     .select('*')
     .eq('program_id', id)
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
 
-  const { data: curriculum, error: currError } = await supabase
+  // 커리큘럼도 없으면 빈 배열
+  const { data: curriculum } = await supabase
     .from('program_curriculum')
     .select('weeks, description')
     .eq('program_id', id)
     .order('sort_order');
 
-  if (currError) throw currError;
-
   return {
-    intro: detail.intro,
-    description: detail.description,
-    qualification: detail.qualification,
-    curriculum: curriculum.map((c) => ({
+    intro: detail?.intro ?? '',
+    description: detail?.description ?? '',
+    qualification: detail?.qualification ?? '',
+    curriculum: (curriculum ?? []).map((c) => ({
       weeks: c.weeks,
       desc: c.description,
     })),
     org: {
-      name: detail.org_name,
-      region: detail.region,
-      phone: detail.phone,
-      kakao: detail.kakao,
-      homepage: detail.homepage,
-      email: detail.email,
+      name: detail?.org_name ?? '',
+      region: detail?.region ?? '',
+      phone: detail?.phone ?? '',
+      kakao: detail?.kakao ?? '',
+      homepage: detail?.homepage ?? '',
+      email: detail?.email ?? '',
     },
   };
 }
