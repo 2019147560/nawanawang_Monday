@@ -315,6 +315,7 @@ function SupabaseHello() {
   const [helloText, setHelloText] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+ const [programs, setPrograms] = useState<Program[]>([]);
   // ✅ 이 줄만 새로 추가
   //const [programs, setPrograms] = useState<Program[]>([]);
   // ✅ useEffect 전체를 아래로 교체
@@ -387,7 +388,7 @@ return (
 export default function HomePage() {
   //const [filters, setFilters] = useState<FilterValues>({ region: [], level: [], mode: [], period: [], status: [], people: [] });
   // 변경: 위에 programs 상태 추가
-const [programs, setPrograms] = useState<Program[]>([]);
+//const [programs, setPrograms] = useState<Program[]>([]);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [view, setView] = useState<'grid' | 'list'>('grid');
