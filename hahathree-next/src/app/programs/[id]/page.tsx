@@ -3,14 +3,20 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Crumb from '@/components/Crumb';
 import { Icon } from '@/components/ui/Icon';
-import { PROGRAMS, getDetailData } from '@/lib/data';
-
+//import { PROGRAMS, getDetailData } from '@/lib/data';
+// 변경
+import { fetchPrograms, fetchProgramDetail } from '@/lib/fetchPrograms';
 interface Props {
   params: { id: string };
 }
 
-export function generateStaticParams() {
-  return PROGRAMS.map(p => ({ id: String(p.id) }));
+// export function generateStaticParams() {
+//   return PROGRAMS.map(p => ({ id: String(p.id) }));
+// }
+// 변경
+export async function generateStaticParams() {
+  const programs = await fetchPrograms();
+  return programs.map(p => ({ id: String(p.id) }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -59,13 +65,18 @@ function SidebarRow({ label, value, last }: { label: string; value: string; last
   );
 }
 
-export default function ProgramDetailPage({ params }: Props) {
-  const p = PROGRAMS.find(p => p.id === Number(params.id));
+// export default function ProgramDetailPage({ params }: Props) {
+//   const p = PROGRAMS.find(p => p.id === Number(params.id));
+//   if (!p) notFound();
+
+//   // id에 따라 상세 데이터 가져오기
+//   const DETAIL_DATA = getDetailData(Number(params.id));
+// 변경
+export default async function ProgramDetailPage({ params }: Props) {
+  const programs = await fetchPrograms();
+  const p = programs.find(p => p.id === Number(params.id));
   if (!p) notFound();
-
-  // id에 따라 상세 데이터 가져오기
-  const DETAIL_DATA = getDetailData(Number(params.id));
-
+  const DETAIL_DATA = await fetchProgramDetail(Number(params.id));
   return (
     <main style={{ maxWidth: 1240, margin: '0 auto', padding: '0 32px 32px' }}>
       <Crumb items={[
