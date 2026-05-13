@@ -19,8 +19,10 @@ export async function generateStaticParams() {
   return programs.map(p => ({ id: String(p.id) }));
 }
 
+// 변경
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const p = PROGRAMS.find(p => p.id === Number(params.id));
+  const programs = await fetchPrograms();
+  const p = programs.find(p => p.id === Number(params.id));
   if (!p) return {};
   return { title: `${p.title.replace('\n', ' ')} — 나와나망` };
 }
