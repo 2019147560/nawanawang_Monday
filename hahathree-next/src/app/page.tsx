@@ -4,7 +4,11 @@ import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import ReviewStrip from '@/components/ReviewStrip';
-import { PROGRAMS, FILTERS, FILTER_OPTIONS, REVIEWS } from '@/lib/data';
+//import { PROGRAMS, FILTERS, FILTER_OPTIONS, REVIEWS } from '@/lib/data';
+// 변경
+import { FILTERS, FILTER_OPTIONS, REVIEWS } from '@/lib/data';
+import { fetchPrograms } from '@/lib/fetchPrograms';
+
 import type { FilterValues } from '@/types';
 
 /* ── Hero ── */
@@ -310,43 +314,24 @@ function SupabaseHello() {
   const [helloText, setHelloText] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('/api/hello');
-        
-        if (!response.ok) {
-          throw new Error(`HTTP Error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        // 에러가 응답에 포함된 경우
-        if (data.error) {
-          console.error('❌ Supabase RPC Error:', data.error);
-          setErrorMessage(data.error);
-          setHelloText(null);
-        } else if (data && Array.isArray(data) && data.length > 0 && data[0].hello) {
-          setHelloText(data[0].hello);
-          setErrorMessage(null);
-        } else {
-          console.log('No data received');
-          setHelloText(null);
-          setErrorMessage(null);
-        }
-      } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : String(error);
-        console.error('❌ API Fetch Error:', errorMsg);
-        setErrorMessage(errorMsg);
-        setHelloText(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  // ✅ 이 줄만 새로 추가
+  const [programs, setPrograms] = useState<Program[]>([]);
+  // ✅ useEffect 전체를 아래로 교체
+useEffect(() => {
+  const load = async () => {
+    try {
+      const data = await fetchPrograms();
+      setPrograms(data);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('❌ fetchPrograms Error:', msg);
+      setErrorMessage(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+  load();
+}, []);
 
 if (loading) {
   return (
@@ -399,7 +384,9 @@ return (
 
 /* ── Page ── */
 export default function HomePage() {
-  const [filters, setFilters] = useState<FilterValues>({ region: [], level: [], mode: [], period: [], status: [], people: [] });
+  //const [filters, setFilters] = useState<FilterValues>({ region: [], level: [], mode: [], period: [], status: [], people: [] });
+  // 변경: 위에 programs 상태 추가
+const [programs, setPrograms] = useState<Program[]>([]);
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [view, setView] = useState<'grid' | 'list'>('grid');
@@ -410,7 +397,7 @@ export default function HomePage() {
   const reset = () => { setFilters({ region: [], level: [], mode: [], period: [], status: [], people: [] }); setQuery(''); setAppliedQuery(''); setPage(1); };
   const search = () => { setAppliedQuery(query); setPage(1); };
 
-  const filtered = useMemo(() => PROGRAMS.filter(p => {
+  const filtered = useMemo(() => programs.filter(p => {
     if (appliedQuery && !p.title.includes(appliedQuery) && !p.org.includes(appliedQuery)) return false;
     const anySelected = (arr: string[]) => arr.length > 0;
     const someChip = (arr: string[], matchFn: (c: string, v: string) => boolean) => arr.some(v => p.chips.some(c => matchFn(c, v)));
@@ -421,7 +408,7 @@ export default function HomePage() {
       if (!filters.status.includes(map[p.status] || p.status)) return false;
     }
     return true;
-  }), [filters, appliedQuery]);
+  }), [programs, filters, appliedQuery]);
 
   const viewBtn = (active: boolean): React.CSSProperties => ({
     height: 34, padding: '0 12px',
@@ -462,7 +449,7 @@ export default function HomePage() {
 
       {view === 'grid' ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 18, marginTop: 18 }}>
-          {filtered.map(p => <ProgramCard key={p.id} p={p} />)}
+          /* {filtered.map(p => <ProgramCard key={p.id} p={p} />)} */
         </div>
       ) : (
         <ListView programs={filtered} />
