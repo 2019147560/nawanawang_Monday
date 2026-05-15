@@ -12,6 +12,43 @@ import type { Program, FilterValues } from '@/types';
 
  
 
+/* ── Mock 횡 스크롤 데이터 ── */
+const MOCK_DEADLINE_PROGRAMS: Program[] = [
+  { id: 101, tag: '회복 프로그램', dDay: 'D-2', title: '천천히, 다시 만나는 일상', org: '경기 청년센터', status: '모집 중', bg: 'var(--card-blue)', chips: ['전체 신청 가능', '경기', '온·오프라인'], weeks: '8주 · 주 1회', deadline: '마감 2026.05.17', statusVariant: 'open' },
+  { id: 102, tag: '온라인 모임', dDay: 'D-1', title: '방 안에서 세상으로,\n온라인 살롱', org: '나나센터 수원', status: '모집 중', bg: 'var(--card-yellow)', chips: ['전체 신청 가능', '경기', '온라인'], weeks: '4주 · 주 1회', deadline: '마감 2026.05.16', statusVariant: 'open' },
+  { id: 103, tag: '사회 적응', dDay: 'D-3', title: '취업 전, 나를\n알아가는 워크숍', org: '인천 청년센터', status: '모집 중', bg: 'var(--card-mustard)', chips: ['전체 신청 가능', '인천', '오프라인'], weeks: '8주 · 주 2회', deadline: '마감 2026.05.18', statusVariant: 'open' },
+  { id: 104, tag: '일경험', dDay: 'D-2', title: '타이틀이 없으면 어떡해', org: '두더지땅굴', status: '모집 중', bg: 'var(--card-mint)', chips: ['전체 신청 가능', '서울', '오프라인'], weeks: '5주', deadline: '마감 2026.05.17', statusVariant: 'open' },
+  { id: 105, tag: '회복 프로그램', dDay: 'D-1', title: '식물 돌봄, 나도 돌봄', org: '부산 청년정책연구원', status: '모집 중', bg: 'var(--card-purple)', chips: ['전체 신청 가능', '부산', '오프라인'], weeks: '8주 · 주 1회', deadline: '마감 2026.05.16', statusVariant: 'open' },
+  { id: 106, tag: '온라인 모임', dDay: 'D-3', title: '늦은 밤 라디오, 청년 사연함', org: '광주 청년재단', status: '모집 중', bg: 'var(--card-lemon)', chips: ['전체 신청 가능', '광주', '온라인'], weeks: '4주 · 주 1회', deadline: '마감 2026.05.18', statusVariant: 'open' },
+];
+
+const MOCK_ONEDAY_PROGRAMS: Program[] = [
+  { id: 201, tag: '월데이', dDay: 'D-7', title: '글쓰기로 나를 정리하는 시간', org: '서울 청년허브', status: '모집 중', bg: 'var(--card-orange)', chips: ['전체 신청 가능', '서울', '오프라인'], weeks: '하루 · 4시간', deadline: '마감 2026.05.22', statusVariant: 'open' },
+  { id: 202, tag: '월데이', dDay: 'D-9', title: '동네 한 바퀴, 산책 클럽', org: '대전 청년정책본부', status: '모집 중', bg: 'var(--card-pink)', chips: ['전체 신청 가능', '대전', '오프라인'], weeks: '하루 · 3시간', deadline: '마감 2026.05.24', statusVariant: 'open' },
+  { id: 203, tag: '월데이', dDay: 'D-5', title: '요리로 잇는 우리, 쿠킹클래스', org: '부산 청년지원센터', status: '모집 중', bg: 'var(--card-mint)', chips: ['전체 신청 가능', '부산', '오프라인'], weeks: '하루 · 5시간', deadline: '마감 2026.05.20', statusVariant: 'open' },
+  { id: 204, tag: '월데이', dDay: 'D-11', title: '사진으로 보는 내 일상', org: '강원 청년허브', status: '모집 중', bg: 'var(--card-blue)', chips: ['전체 신청 가능', '강원', '오프라인'], weeks: '하루 · 6시간', deadline: '마감 2026.05.26', statusVariant: 'open' },
+  { id: 205, tag: '월데이', dDay: 'D-6', title: '도자기로 빚는 나만의 그릇', org: '경기 청년센터', status: '모집 중', bg: 'var(--card-yellow)', chips: ['전체 신청 가능', '경기', '오프라인'], weeks: '하루 · 4시간', deadline: '마감 2026.05.21', statusVariant: 'open' },
+  { id: 206, tag: '월데이', dDay: 'D-14', title: '보드게임으로 만나는 청년들', org: '인천 청년센터', status: '모집 중', bg: 'var(--card-purple)', chips: ['전체 신청 가능', '인천', '오프라인'], weeks: '하루 · 3시간', deadline: '마감 2026.05.29', statusVariant: 'open' },
+];
+
+const MOCK_DEADLINE_PROGRAMS_2: Program[] = [
+  { id: 301, tag: '심리 지원', dDay: 'D-2', title: '나를 이해하는\n심리 탐구 모임', org: '서울 청년허브', status: '모집 중', bg: 'var(--card-purple)', chips: ['전체 신청 가능', '서울', '온라인'], weeks: '6주 · 주 1회', deadline: '마감 2026.05.17', statusVariant: 'open' },
+  { id: 302, tag: '회복 프로그램', dDay: 'D-1', title: '커피 한 잔,\n작은 대화 모임', org: '광주 청년재단', status: '모집 중', bg: 'var(--card-lemon)', chips: ['전체 신청 가능', '광주', '오프라인'], weeks: '4주 · 주 2회', deadline: '마감 2026.05.16', statusVariant: 'open' },
+  { id: 303, tag: '자립 지원', dDay: 'D-3', title: '주거 독립 첫걸음\n세미나', org: '인천 청년센터', status: '모집 중', bg: 'var(--card-mint)', chips: ['전체 신청 가능', '인천', '오프라인'], weeks: '2주 · 주 1회', deadline: '마감 2026.05.18', statusVariant: 'open' },
+  { id: 304, tag: '사회 적응', dDay: 'D-2', title: '게임으로 만나는\n또래 살롱', org: '강원 청년허브', status: '모집 중', bg: 'var(--card-blue)', chips: ['전체 신청 가능', '강원', '온라인'], weeks: '8주 · 주 1회', deadline: '마감 2026.05.17', statusVariant: 'open' },
+  { id: 305, tag: '일경험', dDay: 'D-3', title: '나의 첫 직무 경험\n인턴십', org: '경기 청년센터', status: '모집 중', bg: 'var(--card-mustard)', chips: ['전체 신청 가능', '경기', '오프라인'], weeks: '4주', deadline: '마감 2026.05.18', statusVariant: 'open' },
+  { id: 306, tag: '온라인 모임', dDay: 'D-1', title: '취미로 잇는\n온라인 모임방', org: '부산 청년정책연구원', status: '모집 중', bg: 'var(--card-pink)', chips: ['전체 신청 가능', '부산', '온라인'], weeks: '6주 · 주 1회', deadline: '마감 2026.05.16', statusVariant: 'open' },
+];
+
+const MOCK_ONEDAY_PROGRAMS_2: Program[] = [
+  { id: 401, tag: '월데이', dDay: 'D-8', title: '힐링 숲 캠핑 원데이', org: '강원 청년허브', status: '모집 중', bg: 'var(--card-mint)', chips: ['전체 신청 가능', '강원', '오프라인'], weeks: '하루 · 전일', deadline: '마감 2026.05.23', statusVariant: 'open' },
+  { id: 402, tag: '월데이', dDay: 'D-10', title: '나만의 향수 만들기\n원데이 클래스', org: '서울 청년허브', status: '모집 중', bg: 'var(--card-orange)', chips: ['전체 신청 가능', '서울', '오프라인'], weeks: '하루 · 3시간', deadline: '마감 2026.05.25', statusVariant: 'open' },
+  { id: 403, tag: '월데이', dDay: 'D-4', title: '드로잉으로 표현하는\n내 감정', org: '인천 청년센터', status: '모집 중', bg: 'var(--card-yellow)', chips: ['전체 신청 가능', '인천', '오프라인'], weeks: '하루 · 4시간', deadline: '마감 2026.05.19', statusVariant: 'open' },
+  { id: 404, tag: '월데이', dDay: 'D-12', title: '플리마켓 셀러 체험\n원데이', org: '대전 청년정책본부', status: '모집 중', bg: 'var(--card-blue)', chips: ['전체 신청 가능', '대전', '오프라인'], weeks: '하루 · 5시간', deadline: '마감 2026.05.27', statusVariant: 'open' },
+  { id: 405, tag: '월데이', dDay: 'D-6', title: '책으로 잇는\n독서 모임 데이', org: '경기 청년센터', status: '모집 중', bg: 'var(--card-purple)', chips: ['전체 신청 가능', '경기', '오프라인'], weeks: '하루 · 3시간', deadline: '마감 2026.05.21', statusVariant: 'open' },
+  { id: 406, tag: '월데이', dDay: 'D-13', title: '수제 캔들 만들기\n원데이 클래스', org: '광주 청년재단', status: '모집 중', bg: 'var(--card-lemon)', chips: ['전체 신청 가능', '광주', '오프라인'], weeks: '하루 · 4시간', deadline: '마감 2026.05.28', statusVariant: 'open' },
+];
+
 /* ── Hero ── */
 function Hero() {
   return (
@@ -291,6 +328,53 @@ function ListView({ programs }: { programs: Program[] }) {
   );
 }
 
+/* ── HorizontalCardSection ── */
+function HorizontalCardSection({ title, programs, badge }: {
+  title: string;
+  programs: Program[];
+  badge?: { text: string; color: string; bg: string };
+}) {
+  return (
+    <div style={{ marginTop: 40 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, paddingLeft: 2 }}>
+        {badge && (
+          <span style={{
+            background: badge.bg, color: badge.color,
+            fontSize: 11, fontWeight: 700, padding: '3px 10px',
+            borderRadius: 999,
+          }}>{badge.text}</span>
+        )}
+        <h2 style={{
+          margin: 0, fontSize: 18, fontWeight: 800,
+          color: 'var(--ink-900)', letterSpacing: '-0.025em',
+        }}>{title}</h2>
+      </div>
+      <div style={{
+        display: 'flex', gap: 14, overflowX: 'auto', paddingBottom: 12,
+        scrollbarWidth: 'none',
+        // webkit scrollbar hidden via inline style trick
+        msOverflowStyle: 'none',
+      }}>
+        {programs.map(p => (
+          <div key={p.id} style={{ flexShrink: 0, width: 220 }}>
+            <ProgramCard p={p} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── SectionDivider ── */
+function SectionDivider() {
+  return (
+    <div style={{
+      margin: '48px 0 0',
+      borderTop: '1px solid var(--line)',
+    }} />
+  );
+}
+
 function Pagination({ page, setPage, total }: { page: number; setPage: (n: number) => void; total: number }) {
   const pageBtn = (active: boolean): React.CSSProperties => ({
     width: 36, height: 36, borderRadius: 8, border: 'none',
@@ -469,6 +553,32 @@ const [programs, setPrograms] = useState<Program[]>([]);
       )}
 
       {filtered.length > 0 && <Pagination page={page} setPage={setPage} total={3} />}
+
+      {/* ── 횡 스크롤 섹션 블록 1 ── */}
+      <SectionDivider />
+      <HorizontalCardSection
+        title="이번주 신청 마감"
+        badge={{ text: '⏰ 마감 임박', color: '#c2410c', bg: '#fff7ed' }}
+        programs={MOCK_DEADLINE_PROGRAMS}
+      />
+      <HorizontalCardSection
+        title="1회만 참여 가능해요"
+        badge={{ text: '✦ 원데이', color: '#6d28d9', bg: '#f5f3ff' }}
+        programs={MOCK_ONEDAY_PROGRAMS}
+      />
+
+      {/* ── 횡 스크롤 섹션 블록 2 ── */}
+      <SectionDivider />
+      <HorizontalCardSection
+        title="이번주 신청 마감"
+        badge={{ text: '⏰ 마감 임박', color: '#c2410c', bg: '#fff7ed' }}
+        programs={MOCK_DEADLINE_PROGRAMS_2}
+      />
+      <HorizontalCardSection
+        title="1회만 참여 가능해요"
+        badge={{ text: '✦ 원데이', color: '#6d28d9', bg: '#f5f3ff' }}
+        programs={MOCK_ONEDAY_PROGRAMS_2}
+      />
 
       <SupabaseHello />
     </main>
