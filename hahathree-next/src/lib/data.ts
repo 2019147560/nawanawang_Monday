@@ -428,11 +428,12 @@ export const DETAIL_DATA: ProgramDetail = DEFAULT_DETAIL_DATA;
 
 export const FILTER_OPTIONS: Record<string, string[]> = {
   region: ['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기', '강원', '충청', '전라', '경상', '제주'],
-  level: ['일상 회복', '사회 복귀', '관계 형성'],
+  level: ['생활·신체 회복', '마음·상담', '사람·관계 형성', '취미·활동]', '일경험', '취업·진로' ,'경제 지원', '가족 지원'],
   mode: ['온라인', '오프라인', '온·오프라인'],
   period: ['1회(원데이)', '2회-4회', '5회 이상'],
   status: ['현재 신청 가능', '모집 예정', '마감'],
   people: ['1:1 상담', '여러명'],
+  curation: ['처음이라면 여기부터','이번 주 신청 마감','1회만 참여해도 괜찮아요','온라인으로 먼저 시작','무료로 받을 수 있는 지원' ]
 };
 
 export const FILTERS = [
@@ -442,6 +443,7 @@ export const FILTERS = [
   { id: 'period', label: '참여 기간' },
   { id: 'status', label: '모집 상태' },
   { id: 'people', label: '참가 인원' },
+  { id: 'curation', label: '큐레이션'}
 ] as const;
 
 export const REVIEWS: Review[] = [
