@@ -61,7 +61,7 @@ jobs:
           # workflow_dispatch 입력값을 우선 사용하고, 없으면 기본값 적용
           BLOG_TONE: ${{ github.event.inputs.tone || '공감형' }}
           BLOG_KEYWORDS: ${{ github.event.inputs.keywords || '사회적 고립,관계 단절,정신건강' }}
-          BLOG_LENGTH: ${{ github.event.inputs.length || '1000' }}
+          BLOG_LENGTH: ${{ github.event.inputs.length || '3500' }}
           OUTPUT_FILE: ${{ github.event.inputs.output_file || 'output/blog_post.md' }}
         run: python generate_blog.py
 
