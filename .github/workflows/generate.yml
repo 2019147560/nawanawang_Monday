@@ -20,7 +20,7 @@ on:
       length:
         description: "목표 글자 수"
         required: true
-        default: "1000"
+        default: "3500"
       output_file:
         description: "저장 파일 경로"
         required: false
