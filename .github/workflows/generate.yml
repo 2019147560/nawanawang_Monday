@@ -1,0 +1,83 @@
+name: 고립·은둔 청년 블로그 글 생성
+
+on:
+  # 수동 실행 (GitHub UI에서 직접 트리거)
+  workflow_dispatch:
+    inputs:
+      tone:
+        description: "글의 방향"
+        required: true
+        default: "공감형"
+        type: choice
+        options:
+          - 공감형
+          - 정보형
+          - 희망형
+      keywords:
+        description: "키워드 (쉼표로 구분)"
+        required: true
+        default: "사회적 고립,관계 단절"
+      length:
+        description: "목표 글자 수"
+        required: true
+        default: "1000"
+      output_file:
+        description: "저장 파일 경로"
+        required: false
+        default: "output/blog_post.md"
+
+  # 매주 월요일 오전 9시 (KST = UTC+9, 즉 UTC 00:00) 자동 실행
+  schedule:
+    - cron: "0 0 * * 1"
+
+  # output/ 폴더 제외한 코드 변경 시 CI 확인용 실행
+  push:
+    branches: [main]
+    paths:
+      - "generate_blog.py"
+      - ".github/workflows/generate.yml"
+
+jobs:
+  generate:
+    name: 블로그 글 생성
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # 생성된 파일을 저장소에 커밋하기 위해 필요
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: 블로그 글 생성
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # workflow_dispatch 입력값을 우선 사용하고, 없으면 기본값 적용
+          BLOG_TONE: ${{ github.event.inputs.tone || '공감형' }}
+          BLOG_KEYWORDS: ${{ github.event.inputs.keywords || '사회적 고립,관계 단절,정신건강' }}
+          BLOG_LENGTH: ${{ github.event.inputs.length || '1000' }}
+          OUTPUT_FILE: ${{ github.event.inputs.output_file || 'output/blog_post.md' }}
+        run: python generate_blog.py
+
+      - name: 생성된 파일 아티팩트로 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: blog-post-${{ github.run_number }}
+          path: output/
+          retention-days: 30
+
+      - name: 생성된 파일을 저장소에 커밋 (main 브랜치만)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/
+          # 변경사항이 없으면 커밋하지 않음
+          git diff --staged --quiet || git commit -m "docs: 블로그 글 자동 생성 (#${{ github.run_number }})"
+          git push
