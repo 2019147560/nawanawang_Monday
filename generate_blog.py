@@ -5,11 +5,15 @@ GitHub Actions 또는 로컬에서 실행 가능합니다.
 
 필요한 환경변수:
   ANTHROPIC_API_KEY  — Anthropic API 키 (필수)
+  UNSPLASH_ACCESS_KEY — Unsplash API 키 (이미지 검색, 필수)
+  GMAIL_USER         — 발송 Gmail 주소 (이메일 발송, 필수)
+  GMAIL_APP_PASSWORD — Gmail 앱 비밀번호 (이메일 발송, 필수)
+  EMAIL_TO           — 수신 이메일 주소 (이메일 발송, 필수)
 
 선택적 환경변수:
   BLOG_TONE          — 글의 방향 (공감형 | 정보형 | 희망형, 기본: 공감형)
   BLOG_KEYWORDS      — 쉼표로 구분된 키워드 목록 (기본: 사회적 고립,관계 단절)
-  BLOG_LENGTH        — 목표 글자 수 (기본: 1000)
+  BLOG_LENGTH        — 목표 글자 수 (기본: 3500)
   OUTPUT_FILE        — 저장할 파일 경로 (기본: output/blog_post.md)
 """
 
@@ -18,6 +22,13 @@ import sys
 import json
 import urllib.request
 import urllib.error
+import urllib.parse
+import smtplib
+import shutil
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 from datetime import datetime
 from pathlib import Path
 
@@ -25,13 +36,20 @@ from pathlib import Path
 # ── 설정 ──────────────────────────────────────────────────────────────────────
 
 ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
+UNSPLASH_API_URL  = "https://api.unsplash.com/search/photos"
 MODEL = "claude-sonnet-4-6"
 
-TONE = os.environ.get("BLOG_TONE", "공감형")
+TONE        = os.environ.get("BLOG_TONE", "공감형")
 KEYWORDS_RAW = os.environ.get("BLOG_KEYWORDS", "사회적 고립,관계 단절")
-KEYWORDS = [k.strip() for k in KEYWORDS_RAW.split(",") if k.strip()]
-TARGET_LENGTH = int(os.environ.get("BLOG_LENGTH", "1000"))
+KEYWORDS    = [k.strip() for k in KEYWORDS_RAW.split(",") if k.strip()]
+TARGET_LENGTH = int(os.environ.get("BLOG_LENGTH", "3500"))
 OUTPUT_FILE = os.environ.get("OUTPUT_FILE", "output/blog_post.md")
+OUTPUT_IMG_DIR = Path(OUTPUT_FILE).parent / "images"
+
+UNSPLASH_KEY   = os.environ.get("UNSPLASH_ACCESS_KEY", "")
+GMAIL_USER     = os.environ.get("GMAIL_USER", "")
+GMAIL_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD", "")
+EMAIL_TO       = os.environ.get("EMAIL_TO", "")
 
 
 # ── 참고 이야기 데이터베이스 ──────────────────────────────────────────────────
@@ -109,10 +127,9 @@ STORY_DB = [
 ]
 
 
-# ── 이야기 선택 로직 ──────────────────────────────────────────────────────────
+# ── 이야기 선택 ───────────────────────────────────────────────────────────────
 
 def select_stories(keywords: list[str], tone: str, max_stories: int = 4) -> list[dict]:
-    """키워드와 톤에 맞는 이야기를 점수 기반으로 선택합니다."""
     scored = []
     for story in STORY_DB:
         score = 0
@@ -128,15 +145,78 @@ def select_stories(keywords: list[str], tone: str, max_stories: int = 4) -> list
         if tone == "공감형" and any(t in story["tags"] for t in ["당사자", "가족"]):
             score += 2
         scored.append((score, story))
-
     scored.sort(key=lambda x: x[0], reverse=True)
     selected = [s for _, s in scored[:max_stories] if _ > 0]
-
-    # 점수 0이어도 최소 2개는 보장
     if len(selected) < 2:
         selected = [s for _, s in scored[:2]]
-
     return selected
+
+
+# ── Unsplash 이미지 검색 & 다운로드 ──────────────────────────────────────────
+
+def search_and_download_images(keywords: list[str], count: int = 3) -> list[dict]:
+    """Unsplash에서 이미지를 검색해 로컬에 저장하고 메타 정보를 반환합니다."""
+    if not UNSPLASH_KEY:
+        print("   ⚠️  UNSPLASH_ACCESS_KEY 없음 — 이미지 건너뜀")
+        return []
+
+    OUTPUT_IMG_DIR.mkdir(parents=True, exist_ok=True)
+
+    # 영문 검색어 매핑 (Unsplash는 영어 검색이 더 풍부)
+    query_map = {
+        "사회적 고립": "lonely young person city",
+        "은둔형 외톨이": "person alone room window",
+        "관계 단절": "isolation solitude youth",
+        "정신건강": "mental health calm nature",
+        "취업 좌절": "youth unemployment stress",
+        "정부 지원": "community support helping hands",
+        "희망형": "hope sunrise new beginning",
+        "회복": "recovery growth green plant",
+    }
+    query = next((query_map[k] for k in keywords if k in query_map), "youth alone society")
+
+    params = urllib.parse.urlencode({
+        "query": query,
+        "per_page": count,
+        "orientation": "landscape",
+    })
+    url = f"{UNSPLASH_API_URL}?{params}"
+    req = urllib.request.Request(url, headers={
+        "Authorization": f"Client-ID {UNSPLASH_KEY}",
+        "Accept-Version": "v1",
+    })
+
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except Exception as e:
+        print(f"   ⚠️  이미지 검색 실패: {e}")
+        return []
+
+    images = []
+    for i, photo in enumerate(data.get("results", [])):
+        img_url  = photo["urls"]["regular"]
+        alt_text = photo.get("alt_description") or photo["description"] or "image"
+        author   = photo["user"]["name"]
+        unsplash_link = photo["links"]["html"]
+
+        filename = f"image_{i+1}.jpg"
+        filepath = OUTPUT_IMG_DIR / filename
+
+        try:
+            with urllib.request.urlopen(img_url, timeout=30) as r, open(filepath, "wb") as f:
+                shutil.copyfileobj(r, f)
+            print(f"   📷 이미지 저장: {filename} (by {author})")
+            images.append({
+                "path": f"images/{filename}",
+                "alt": alt_text,
+                "author": author,
+                "unsplash_link": unsplash_link,
+            })
+        except Exception as e:
+            print(f"   ⚠️  이미지 다운로드 실패 ({filename}): {e}")
+
+    return images
 
 
 # ── Anthropic API 호출 ────────────────────────────────────────────────────────
@@ -144,7 +224,7 @@ def select_stories(keywords: list[str], tone: str, max_stories: int = 4) -> list
 def call_anthropic(prompt: str, api_key: str) -> str:
     payload = json.dumps({
         "model": MODEL,
-        "max_tokens": 1000,
+        "max_tokens": 3500,
         "messages": [{"role": "user", "content": prompt}],
     }).encode("utf-8")
 
@@ -160,7 +240,7 @@ def call_anthropic(prompt: str, api_key: str) -> str:
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=60) as resp:
+        with urllib.request.urlopen(req, timeout=120) as resp:
             data = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8")
@@ -174,11 +254,23 @@ def call_anthropic(prompt: str, api_key: str) -> str:
 
 # ── 프롬프트 구성 ─────────────────────────────────────────────────────────────
 
-def build_prompt(stories: list[dict], tone: str, keywords: list[str], length: int) -> str:
+def build_prompt(stories: list[dict], tone: str, keywords: list[str], length: int, images: list[dict]) -> str:
     stories_text = "\n\n".join(
         f"[{i+1}] {s['title']}\n{s['body']}"
         for i, s in enumerate(stories)
     )
+
+    # 이미지 삽입 지시
+    img_instruction = ""
+    if images:
+        img_refs = "\n".join(
+            f"  - ![{img['alt']}]({img['path']}) *(사진: {img['author']} / Unsplash)*"
+            for img in images
+        )
+        img_instruction = f"""
+- 글 중간 중간 자연스러운 위치에 아래 이미지를 Markdown 형식으로 삽입하세요.
+  이미지는 소제목 바로 아래나 단락 사이에 넣어주세요:
+{img_refs}"""
 
     return f"""당신은 따뜻하고 공감 가는 블로그 글을 쓰는 한국어 작가입니다.
 
@@ -191,16 +283,17 @@ def build_prompt(stories: list[dict], tone: str, keywords: list[str], length: in
 
 작성 규칙:
 - Markdown 형식으로 작성하세요.
-- 제목은 # 으로 시작하세요.
-- 소제목(##)으로 단락을 2~3개 나눠주세요.
+- 제목은 # 으로 시작하고, 제목 옆에 어울리는 이모지를 1~2개 붙이세요.
+- 소제목(##) 앞에도 각각 어울리는 이모지를 붙이세요.
+- 소제목(##)으로 단락을 3~4개 나눠주세요.
 - 데이터와 당사자 목소리를 자연스럽게 녹여주세요.
 - 독자가 "나만 이런 게 아니었구나"를 느낄 수 있도록 공감 언어를 사용하세요.
 - 마지막은 따뜻한 마무리 문장으로 끝내주세요.
 - 자료를 그대로 나열하지 말고, 이야기 흐름으로 재구성해주세요.
-- 출처 목록은 따로 붙이지 마세요."""
+- 출처 목록은 따로 붙이지 마세요.{img_instruction}"""
 
 
-# ── 메타데이터 헤더 생성 ──────────────────────────────────────────────────────
+# ── 프론트매터 ────────────────────────────────────────────────────────────────
 
 def build_frontmatter(tone: str, keywords: list[str]) -> str:
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -214,6 +307,65 @@ def build_frontmatter(tone: str, keywords: list[str]) -> str:
     )
 
 
+# ── 이메일 발송 ───────────────────────────────────────────────────────────────
+
+def send_email(blog_text: str, output_path: Path, images: list[dict]):
+    if not all([GMAIL_USER, GMAIL_PASSWORD, EMAIL_TO]):
+        print("   ⚠️  이메일 환경변수 미설정 — 발송 건너뜀")
+        return
+
+    print(f"📧 이메일 발송 중 → {EMAIL_TO}")
+
+    # Markdown을 간단한 HTML로 변환 (줄바꿈 처리)
+    html_body = "<br>".join(
+        f"<h2>{line[3:]}</h2>" if line.startswith("## ") else
+        f"<h1>{line[2:]}</h1>" if line.startswith("# ") else
+        f"<p>{line}</p>" if line.strip() else ""
+        for line in blog_text.splitlines()
+    )
+    html_body = (
+        "<html><body style='font-family:sans-serif;max-width:700px;margin:auto;line-height:1.8'>"
+        + html_body
+        + "</body></html>"
+    )
+
+    now_str = datetime.now().strftime("%Y년 %m월 %d일")
+    msg = MIMEMultipart("mixed")
+    msg["Subject"] = f"📝 고립·은둔 청년 블로그 글 — {now_str}"
+    msg["From"]    = GMAIL_USER
+    msg["To"]      = EMAIL_TO
+
+    # HTML 본문
+    msg.attach(MIMEText(html_body, "html", "utf-8"))
+
+    # Markdown 파일 첨부
+    with open(output_path, "rb") as f:
+        part = MIMEBase("application", "octet-stream")
+        part.set_payload(f.read())
+        encoders.encode_base64(part)
+        part.add_header("Content-Disposition", f'attachment; filename="{output_path.name}"')
+        msg.attach(part)
+
+    # 이미지 파일 첨부
+    for img in images:
+        img_path = Path(OUTPUT_FILE).parent / img["path"]
+        if img_path.exists():
+            with open(img_path, "rb") as f:
+                part = MIMEBase("image", "jpeg")
+                part.set_payload(f.read())
+                encoders.encode_base64(part)
+                part.add_header("Content-Disposition", f'attachment; filename="{img_path.name}"')
+                msg.attach(part)
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=30) as server:
+            server.login(GMAIL_USER, GMAIL_PASSWORD)
+            server.sendmail(GMAIL_USER, EMAIL_TO, msg.as_bytes())
+        print(f"   ✅ 발송 완료 → {EMAIL_TO}")
+    except Exception as e:
+        print(f"   ❌ 이메일 발송 실패: {e}", file=sys.stderr)
+
+
 # ── 메인 ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -222,7 +374,7 @@ def main():
         print("❌ ANTHROPIC_API_KEY 환경변수가 설정되지 않았습니다.", file=sys.stderr)
         sys.exit(1)
 
-    print(f"📋 설정")
+    print("📋 설정")
     print(f"   톤:        {TONE}")
     print(f"   키워드:    {', '.join(KEYWORDS)}")
     print(f"   목표 길이: {TARGET_LENGTH}자")
@@ -232,17 +384,20 @@ def main():
     print("🔍 이야기 선택 중...")
     stories = select_stories(KEYWORDS, TONE)
     for s in stories:
-        print(f"   ✓ {s['title'][:40]}...")
+        print(f"   ✓ {s['title'][:45]}...")
+    print()
+
+    print("🖼️  이미지 검색 및 다운로드 중...")
+    images = search_and_download_images(KEYWORDS, count=3)
     print()
 
     print("✍️  블로그 글 생성 중 (Claude API 호출)...")
-    prompt = build_prompt(stories, TONE, KEYWORDS, TARGET_LENGTH)
+    prompt = build_prompt(stories, TONE, KEYWORDS, TARGET_LENGTH, images)
     blog_text = call_anthropic(prompt, api_key)
     print()
 
     output_path = Path(OUTPUT_FILE)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-
     full_content = build_frontmatter(TONE, KEYWORDS) + blog_text
     output_path.write_text(full_content, encoding="utf-8")
 
@@ -250,19 +405,23 @@ def main():
     print(f"✅ 완료!")
     print(f"   파일:   {output_path.resolve()}")
     print(f"   글자수: {char_count:,}자")
+    print()
 
-    # GitHub Actions summary 출력
-    github_output = os.environ.get("GITHUB_STEP_SUMMARY", "")
-    if github_output:
-        with open(github_output, "a", encoding="utf-8") as f:
-            f.write(f"## 📝 블로그 글 생성 완료\n\n")
-            f.write(f"| 항목 | 내용 |\n|------|------|\n")
+    send_email(blog_text, output_path, images)
+
+    # GitHub Actions Step Summary
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY", "")
+    if summary_path:
+        with open(summary_path, "a", encoding="utf-8") as f:
+            f.write("## 📝 블로그 글 생성 완료\n\n")
+            f.write("| 항목 | 내용 |\n|------|------|\n")
             f.write(f"| 톤 | {TONE} |\n")
             f.write(f"| 키워드 | {', '.join(KEYWORDS)} |\n")
             f.write(f"| 글자 수 | {char_count:,}자 |\n")
+            f.write(f"| 이미지 수 | {len(images)}장 |\n")
             f.write(f"| 출력 파일 | `{OUTPUT_FILE}` |\n\n")
             f.write("### 생성된 글 미리보기\n\n")
-            preview = blog_text[:500] + ("..." if len(blog_text) > 500 else "")
+            preview = blog_text[:600] + ("..." if len(blog_text) > 600 else "")
             f.write(preview + "\n")
 
 
