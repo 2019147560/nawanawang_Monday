@@ -25,13 +25,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: 'pip'
-          cache-dependency-path: 'requirements.txt'
 
       # ── 3. 의존성 설치 ────────────────────────────────────────
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install httpx beautifulsoup4 playwright urllib3
           playwright install chromium --with-deps
 
       # ── 4. httpx 기반 크롤러 (Playwright 불필요) ─────────────
