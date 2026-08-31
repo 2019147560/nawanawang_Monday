@@ -14,7 +14,7 @@ GitHub Actions 또는 로컬에서 실행 가능합니다.
   BLOG_TONE          — 글의 방향 (공감형 | 정보형 | 희망형, 기본: 공감형)
   BLOG_KEYWORDS      — 쉼표로 구분된 강조 키워드 목록 (기본: 없음. 소스 선택에는 쓰이지 않고,
                         글 작성 시 강조하면 좋은 키워드로만 전달됩니다)
-  BLOG_LENGTH        — 목표 글자 수 (기본: 1000)
+  BLOG_LENGTH        — 목표 글자 수 (기본: 3000)
   OUTPUT_FILE        — 저장할 파일 경로 (기본: output/blog_post.md)
   SOURCE_DIR         — grok-research-results 폴더 경로를 직접 지정 (기본: 아래 후보 경로들을
                         순서대로 탐색: $GITHUB_WORKSPACE/grok-research-results ,
