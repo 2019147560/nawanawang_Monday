@@ -47,6 +47,11 @@ MAX_SOURCE_CHARS = 6000  # 프롬프트에 넣을 소스 자료 최대 길이(�
 # 토큰 예산을 잡아줘야 글이 중간에 잘리지 않습니다. (최소 1024, 최대 8192 토큰)
 MAX_OUTPUT_TOKENS = min(8192, max(1024, int(TARGET_LENGTH * 3)))
 
+# 스트리밍 없이 응답을 한 번에 기다리는 방식이라, 토큰 예산이 클수록
+# 응답을 다 받기까지 오래 걸립니다. 토큰 예산에 비례해 넉넉하게 잡되
+# 최소 120초, 최대 10분(600초)으로 둡니다.
+REQUEST_TIMEOUT = min(600, max(120, MAX_OUTPUT_TOKENS // 10))
+
 
 # ── 소스 자료 탐색/선택 ────────────────────────────────────────────────────────
 def find_source_dir() -> Path:
@@ -115,7 +120,7 @@ def call_anthropic(prompt: str, api_key: str, max_tokens: int = MAX_OUTPUT_TOKEN
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=60) as resp:
+        with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as resp:
             data = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8")
