@@ -37,7 +37,7 @@ MODEL = "claude-sonnet-4-6"
 TONE = os.environ.get("BLOG_TONE", "공감형")
 KEYWORDS_RAW = os.environ.get("BLOG_KEYWORDS", "")
 KEYWORDS = [k.strip() for k in KEYWORDS_RAW.split(",") if k.strip()]
-TARGET_LENGTH = int(os.environ.get("BLOG_LENGTH", "1000"))
+TARGET_LENGTH = int(os.environ.get("BLOG_LENGTH", "4000"))
 OUTPUT_FILE = os.environ.get("OUTPUT_FILE", "output/blog_post.md")
 
 MAX_SOURCE_CHARS = 6000  # 프롬프트에 넣을 소스 자료 최대 길이(안전장치)
@@ -96,7 +96,7 @@ def extract_title(md_text: str) -> str:
 def call_anthropic(prompt: str, api_key: str) -> str:
     payload = json.dumps({
         "model": MODEL,
-        "max_tokens": 1000,
+        "max_tokens": 4000,
         "messages": [{"role": "user", "content": prompt}],
     }).encode("utf-8")
     req = urllib.request.Request(
