@@ -5,7 +5,7 @@ from jsbwelfare_scraper import get_post_links, parse_detail
 import json, time, random
 
 def main():
-    hints = get_post_links()
+    hints = get_post_links(max_pages=50)  # 최대 50페이지로 제한
     results = []
     for hint in hints:
         d = parse_detail(hint)
