@@ -1,3 +1,217 @@
+# name: Run Crawlers
+
+# on:
+#   schedule:
+#     - cron: '0 0 * * 1'   # 매주 월요일 00:00 UTC (한국 09:00)
+#   workflow_dispatch:        # 수동 실행 버튼
+#     inputs:
+#       target:
+#         description: '실행할 크롤러 (all 또는 파일명, 예: crawl_notscary)'
+#         required: false
+#         default: 'all'
+
+# jobs:
+#   crawl:
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 60
+
+#     steps:
+#       # ── 1. 코드 체크아웃 ──────────────────────────────────────
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#       # ── 2. Python 환경 ────────────────────────────────────────
+#       - name: Set up Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: '3.12'
+
+#       # ── 3. 의존성 설치 ────────────────────────────────────────
+#       - name: Install dependencies
+#         run: |
+#           pip install httpx beautifulsoup4 playwright urllib3
+#           playwright install chromium --with-deps
+
+#       # ── 4. httpx 기반 크롤러 (Playwright 불필요) ─────────────
+#       - name: Run httpx crawlers
+#         if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == '' || contains(github.event.inputs.target, 'notscary') || contains(github.event.inputs.target, 'glosy') || contains(github.event.inputs.target, 'neetpeople') || contains(github.event.inputs.target, 'neetconnect') || contains(github.event.inputs.target, 'nwjob') || contains(github.event.inputs.target, 'incheon') || contains(github.event.inputs.target, 'seoul') || contains(github.event.inputs.target, 'jejuyouth') }}
+#         run: |
+#           TARGET="${{ github.event.inputs.target }}"
+#           run_if() {
+#             local name=$1
+#             local file=$2
+#             if [ "$TARGET" = "all" ] || [ -z "$TARGET" ] || echo "$TARGET" | grep -q "$name"; then
+#               echo "▶ $file 실행 중..."
+#               python crawlers/$file && echo "✅ $file 완료" || echo "⚠️  $file 실패"
+#             fi
+#           }
+#           run_if notscary  crawl_notscary.py
+#           run_if glosy     crawl_glosy.py
+#           run_if neetpeople crawl_neetpeople.py
+#           run_if neetconnect crawl_neetconnect.py
+#           run_if nwjob     crawl_nwjob.py
+#           run_if incheon   crawl_incheon.py
+#           run_if seoul     crawl_seoul_youth.py
+#           run_if jejuyouth crawl_jejuyouth.py
+
+#       # ── 5. Playwright 기반 크롤러 ─────────────────────────────
+#       - name: Run Playwright crawlers
+#         if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == '' || contains(github.event.inputs.target, 'dudug') || contains(github.event.inputs.target, 'siryc') || contains(github.event.inputs.target, 'gjtory') || contains(github.event.inputs.target, 'dgdream') }}
+#         run: |
+#           TARGET="${{ github.event.inputs.target }}"
+#           run_if() {
+#             local name=$1
+#             local file=$2
+#             if [ "$TARGET" = "all" ] || [ -z "$TARGET" ] || echo "$TARGET" | grep -q "$name"; then
+#               echo "▶ $file 실행 중..."
+#               python crawlers/$file && echo "✅ $file 완료" || echo "⚠️  $file 실패"
+#             fi
+#           }
+#           run_if dudug   crawl_dudug.py
+#           run_if siryc   crawl_siryc.py
+#           run_if gjtory  crawl_gjtory.py
+#           run_if dgdream crawl_dgdream45.py
+
+#       # ── 6. JSON 결과 합치기 ───────────────────────────────────
+#       - name: Merge JSON results
+#         run: |
+#           python3 << 'PYEOF'
+#           import json, glob, os
+
+#           all_programs = []
+#           for fpath in sorted(glob.glob("*.json")):
+#               if not fpath.endswith("_programs.json") and fpath != "all_programs.json":
+#                   continue
+#               try:
+#                   with open(fpath) as f:
+#                       data = json.load(f)
+#                   if isinstance(data, list):
+#                       all_programs.extend(data)
+#                       print(f"  {fpath}: {len(data)}개")
+#               except Exception as e:
+#                   print(f"  {fpath} 읽기 실패: {e}")
+
+#           with open("all_programs.json", "w", encoding="utf-8") as f:
+#               json.dump(all_programs, f, ensure_ascii=False, indent=2)
+
+#           print(f"\n총 {len(all_programs)}개 → all_programs.json")
+#           PYEOF
+
+#       # ── 7. SQL 변환 ───────────────────────────────────────────
+#       - name: Convert JSON to SQL
+#         run: |
+#           python3 << 'PYEOF'
+#           import json, re, os
+#           from datetime import datetime
+
+#           START_ID = int(os.environ.get("SQL_START_ID", "2100"))
+
+#           BG_MAP = {
+#               "일경험":   "var(--card-blue)",
+#               "자조모임": "var(--card-green)",
+#               "상담":     "var(--card-purple)",
+#               "교육":     "var(--card-yellow)",
+#               "생활지원": "var(--card-orange)",
+#               "문화예술": "var(--card-pink)",
+#               "창업":     "var(--card-red)",
+#               "프로그램": "var(--card-gray)",
+#           }
+
+#           def esc(s):
+#               if not s: return "NULL"
+#               return "'" + str(s).replace("'", "''") + "'"
+
+#           def to_date(s):
+#               if not s: return "NULL"
+#               m = re.search(r'(\d{4})[.\-](\d{2})[.\-](\d{2})', str(s))
+#               if m: return f"'{m.group(1)}-{m.group(2)}-{m.group(3)}'"
+#               return "NULL"
+
+#           with open("all_programs.json") as f:
+#               data = json.load(f)
+
+#           lines = [
+#               "-- AUTO GENERATED by GitHub Actions",
+#               f"-- 생성일시: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+#               f"-- 총 {len(data)}개 프로그램",
+#               f"-- ID 범위: {START_ID} ~ {START_ID + len(data) - 1}\n",
+#           ]
+
+#           # programs
+#           lines.append("INSERT INTO public.programs (id, tag, d_day, title, org, status, bg, weeks, deadline, status_variant) VALUES")
+#           rows = []
+#           for i, p in enumerate(data):
+#               pid = START_ID + i
+#               rows.append(f"  ({pid}, {esc(p.get('tag'))}, {esc(p.get('dDay'))}, {esc(p.get('title'))}, "
+#                           f"{esc(p.get('org'))}, {esc(p.get('status'))}, "
+#                           f"{esc(BG_MAP.get(p.get('tag',''), 'var(--card-gray)'))}, "
+#                           f"{esc(p.get('weeks'))}, {to_date(p.get('dDay'))}, {esc(p.get('statusVariant'))})")
+#           lines.append(",\n".join(rows) + ";\n")
+
+#           # program_details
+#           lines.append("INSERT INTO public.program_details (program_id, intro, description, qualification, org_name, region, phone, kakao, homepage, email) VALUES")
+#           rows = []
+#           for i, p in enumerate(data):
+#               pid = START_ID + i
+#               d = p.get("detail", {}); org = d.get("org", {})
+#               rows.append(f"  ({pid}, {esc(d.get('intro'))}, {esc(d.get('description'))}, "
+#                           f"{esc(d.get('qualification'))}, {esc(org.get('name'))}, "
+#                           f"{esc(org.get('region'))}, {esc(org.get('phone'))}, "
+#                           f"{esc(org.get('kakao'))}, {esc(org.get('homepage'))}, {esc(org.get('email'))})")
+#           lines.append(",\n".join(rows) + ";\n")
+
+#           # program_chips
+#           chip_rows = []
+#           for i, p in enumerate(data):
+#               pid = START_ID + i
+#               for chip in p.get("chips", []):
+#                   chip_rows.append(f"  ({pid}, {esc(chip)})")
+#           if chip_rows:
+#               lines.append("INSERT INTO public.program_chips (program_id, chip) VALUES")
+#               lines.append(",\n".join(chip_rows) + ";\n")
+
+#           # program_curriculum
+#           cur_rows = []
+#           for i, p in enumerate(data):
+#               pid = START_ID + i
+#               for j, c in enumerate(p.get("detail", {}).get("curriculum", [])):
+#                   cur_rows.append(f"  ({pid}, {esc(c.get('weeks'))}, {esc(c.get('desc'))}, {j+1})")
+#           if cur_rows:
+#               lines.append("INSERT INTO public.program_curriculum (program_id, weeks, description, sort_order) VALUES")
+#               lines.append(",\n".join(cur_rows) + ";\n")
+
+#           with open("insert_programs.sql", "w", encoding="utf-8") as f:
+#               f.write("\n".join(lines))
+
+#           print(f"✅ insert_programs.sql 생성 완료 ({len(data)}개)")
+#           PYEOF
+#         env:
+#           SQL_START_ID: '2100'
+
+#       # ── 8. 결과물 아티팩트 업로드 ─────────────────────────────
+#       - name: Upload artifacts
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: crawl-results-${{ github.run_number }}
+#           path: |
+#             *_programs.json
+#             all_programs.json
+#             insert_programs.sql
+#           retention-days: 30
+
+#       # ── 9. 결과 요약 출력 ─────────────────────────────────────
+#       - name: Summary
+#         run: |
+#           echo "## 크롤링 결과" >> $GITHUB_STEP_SUMMARY
+#           echo "" >> $GITHUB_STEP_SUMMARY
+#           for f in *_programs.json; do
+#             count=$(python3 -c "import json; print(len(json.load(open('$f'))))" 2>/dev/null || echo "0")
+#             echo "- **$f**: ${count}개" >> $GITHUB_STEP_SUMMARY
+#           done
+#           total=$(python3 -c "import json; print(len(json.load(open('all_programs.json'))))" 2>/dev/null || echo "0")
+#           echo "" >> $GITHUB_STEP_SUMMARY
+#           echo "**총계: ${total}개**" >> $GITHUB_STEP_SUMMARY
+
 name: Run Crawlers
 
 on:
@@ -29,12 +243,12 @@ jobs:
       # ── 3. 의존성 설치 ────────────────────────────────────────
       - name: Install dependencies
         run: |
-          pip install httpx beautifulsoup4 playwright urllib3
+          pip install httpx requests beautifulsoup4 playwright urllib3 openpyxl selenium webdriver-manager
           playwright install chromium --with-deps
 
-      # ── 4. httpx 기반 크롤러 (Playwright 불필요) ─────────────
+      # ── 4. httpx/requests 기반 크롤러 (Playwright 불필요) ────
       - name: Run httpx crawlers
-        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == '' || contains(github.event.inputs.target, 'notscary') || contains(github.event.inputs.target, 'glosy') || contains(github.event.inputs.target, 'neetpeople') || contains(github.event.inputs.target, 'neetconnect') || contains(github.event.inputs.target, 'nwjob') || contains(github.event.inputs.target, 'incheon') || contains(github.event.inputs.target, 'seoul') || contains(github.event.inputs.target, 'jejuyouth') }}
+        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == '' || contains(github.event.inputs.target, 'notscary') || contains(github.event.inputs.target, 'glosy') || contains(github.event.inputs.target, 'neetpeople') || contains(github.event.inputs.target, 'neetconnect') || contains(github.event.inputs.target, 'nwjob') || contains(github.event.inputs.target, 'incheon') || contains(github.event.inputs.target, 'seoul') || contains(github.event.inputs.target, 'jejuyouth') || contains(github.event.inputs.target, 'jsbwelfare') || contains(github.event.inputs.target, 'dgyouth') || contains(github.event.inputs.target, 'seoguyouth') || contains(github.event.inputs.target, 'cbhope') || contains(github.event.inputs.target, 'cba') || contains(github.event.inputs.target, 'happitory') }}
         run: |
           TARGET="${{ github.event.inputs.target }}"
           run_if() {
@@ -45,18 +259,24 @@ jobs:
               python crawlers/$file && echo "✅ $file 완료" || echo "⚠️  $file 실패"
             fi
           }
-          run_if notscary  crawl_notscary.py
-          run_if glosy     crawl_glosy.py
-          run_if neetpeople crawl_neetpeople.py
+          run_if notscary   crawl_notscary.py
+          run_if glosy      crawl_glosy.py
+          run_if neetpeople  crawl_neetpeople.py
           run_if neetconnect crawl_neetconnect.py
-          run_if nwjob     crawl_nwjob.py
-          run_if incheon   crawl_incheon.py
-          run_if seoul     crawl_seoul_youth.py
-          run_if jejuyouth crawl_jejuyouth.py
+          run_if nwjob      crawl_nwjob.py
+          run_if incheon    crawl_incheon.py
+          run_if seoul      crawl_seoul_youth.py
+          run_if jejuyouth  crawl_jejuyouth.py
+          run_if jsbwelfare crawl_jsbwelfare.py
+          run_if dgyouth    crawl_dgyouth.py
+          run_if seoguyouth crawl_seoguyouth.py
+          run_if cbhope     crawl_cbhope.py
+          run_if cba        crawl_cba.py
+          run_if happitory  crawl_happitory.py
 
-      # ── 5. Playwright 기반 크롤러 ─────────────────────────────
+      # ── 5. Playwright/Selenium 기반 크롤러 ───────────────────
       - name: Run Playwright crawlers
-        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == '' || contains(github.event.inputs.target, 'dudug') || contains(github.event.inputs.target, 'siryc') || contains(github.event.inputs.target, 'gjtory') || contains(github.event.inputs.target, 'dgdream') }}
+        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == '' || contains(github.event.inputs.target, 'dudug') || contains(github.event.inputs.target, 'siryc') || contains(github.event.inputs.target, 'gjtory') || contains(github.event.inputs.target, 'dgdream') || contains(github.event.inputs.target, 'springyouth') }}
         run: |
           TARGET="${{ github.event.inputs.target }}"
           run_if() {
@@ -67,10 +287,11 @@ jobs:
               python crawlers/$file && echo "✅ $file 완료" || echo "⚠️  $file 실패"
             fi
           }
-          run_if dudug   crawl_dudug.py
-          run_if siryc   crawl_siryc.py
-          run_if gjtory  crawl_gjtory.py
-          run_if dgdream crawl_dgdream45.py
+          run_if dudug       crawl_dudug.py
+          run_if siryc       crawl_siryc.py
+          run_if gjtory      crawl_gjtory.py
+          run_if dgdream     crawl_dgdream45.py
+          run_if springyouth crawl_springyouth.py
 
       # ── 6. JSON 결과 합치기 ───────────────────────────────────
       - name: Merge JSON results
