@@ -34,7 +34,7 @@ jobs:
 
       # ── 4. httpx/requests 기반 크롤러 (Playwright 불필요) ────
       - name: Run httpx crawlers
-        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == '' || contains(github.event.inputs.target, 'notscary') || contains(github.event.inputs.target, 'glosy') || contains(github.event.inputs.target, 'neetpeople') || contains(github.event.inputs.target, 'neetconnect') || contains(github.event.inputs.target, 'nwjob') || contains(github.event.inputs.target, 'incheon') || contains(github.event.inputs.target, 'seoul') || contains(github.event.inputs.target, 'jejuyouth') || contains(github.event.inputs.target, 'jsbwelfare') || contains(github.event.inputs.target, 'dgyouth') || contains(github.event.inputs.target, 'seoguyouth') || contains(github.event.inputs.target, 'cbhope') || contains(github.event.inputs.target, 'cba') || contains(github.event.inputs.target, 'happitory') }}
+        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == '' || contains(github.event.inputs.target, 'notscary') || contains(github.event.inputs.target, 'glosy') || contains(github.event.inputs.target, 'neetpeople') || contains(github.event.inputs.target, 'neetconnect') || contains(github.event.inputs.target, 'nwjob') || contains(github.event.inputs.target, 'incheon') || contains(github.event.inputs.target, 'seoul') || contains(github.event.inputs.target, 'jejuyouth') || contains(github.event.inputs.target, 'dgyouth') || contains(github.event.inputs.target, 'seoguyouth') || contains(github.event.inputs.target, 'cbhope') || contains(github.event.inputs.target, 'cba') || contains(github.event.inputs.target, 'happitory') }}
         run: |
           TARGET="${{ github.event.inputs.target }}"
           run_if() {
@@ -53,7 +53,6 @@ jobs:
           run_if incheon    crawl_incheon.py
           run_if seoul      crawl_seoul_youth.py
           run_if jejuyouth  crawl_jejuyouth.py
-          run_if jsbwelfare crawl_jsbwelfare.py
           run_if dgyouth    crawl_dgyouth.py
           run_if seoguyouth crawl_seoguyouth.py
           run_if cbhope     crawl_cbhope.py
@@ -218,3 +217,16 @@ jobs:
           total=$(python3 -c "import json; print(len(json.load(open('all_programs.json'))))" 2>/dev/null || echo "0")
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**총계: ${total}개**" >> $GITHUB_STEP_SUMMARY
+
+      # ── 10. jsbwelfare (마지막 / 불안정 사이트) ──────────────
+      # 무한 지연 가능성이 있어 맨 마지막에 단독 실행
+      # 실패해도 전체 워크플로우는 성공으로 처리
+      - name: Run jsbwelfare crawler (last)
+        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == '' || contains(github.event.inputs.target, 'jsbwelfare') }}
+        continue-on-error: true
+        timeout-minutes: 15
+        run: |
+          echo "▶ crawl_jsbwelfare.py 실행 중 (최대 15분)..."
+          python crawlers/crawl_jsbwelfare.py \
+            && echo "✅ jsbwelfare 완료" \
+            || echo "⚠️  jsbwelfare 실패 (다른 크롤러 결과에는 영향 없음)"
