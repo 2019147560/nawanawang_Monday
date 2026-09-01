@@ -65,7 +65,7 @@ def clean(text: str) -> str:
 
 # ── 1단계: 목록 페이지에서 wr_id 수집 ────────────────────────────────────────
 
-def get_post_links() -> list[dict]:
+def get_post_links(max_pages: int = 50) -> list[dict]:
     """
     그누보드 목록 구조:
     - .bo_tbl tbody tr > td.td_subject > a[href*='wr_id=']
@@ -74,10 +74,11 @@ def get_post_links() -> list[dict]:
     """
     links = []
     seen  = set()
+    empty_streak = 0  # 새 게시물 없는 페이지 연속 카운트
 
-    for page in range(1, 200):  # 충분히 크게
+    for page in range(1, max_pages + 1):
         params = {**LIST_PARAMS, "page": page}
-        print(f"  목록 페이지 {page} 파싱 중...")
+        print(f"  목록 페이지 {page}/{max_pages} 파싱 중...")
         soup = fetch(LIST_URL, params=params)
         if not soup:
             break
@@ -90,7 +91,7 @@ def get_post_links() -> list[dict]:
             soup.select("a[href*='bo_table=notice'][href*='wr_id=']")
         )
 
-        found_any = False
+        new_count = 0
         for a in anchors:
             href = a.get("href", "")
             m = re.search(r"wr_id=(\d+)", href)
@@ -107,7 +108,6 @@ def get_post_links() -> list[dict]:
             row = a.find_parent("tr") or a.find_parent("li") or a.find_parent("div")
             pub_date = ""
             if row:
-                # 날짜 셀
                 date_td = row.select_one("td.td_date, .td_datetime, time")
                 if date_td:
                     pub_date = clean(date_td.get_text())
@@ -130,16 +130,24 @@ def get_post_links() -> list[dict]:
                 "pub_date": pub_date,
                 "cover":    cover,
             })
-            found_any = True
+            new_count += 1
 
-        if not found_any:
-            print(f"  → 페이지 {page}에 게시물 없음, 중단")
+        # 이 페이지에서 새 게시물이 없으면 → 마지막 페이지 도달
+        if new_count == 0:
+            empty_streak += 1
+            print(f"  → 새 게시물 없음 (연속 {empty_streak}회), 중단")
             break
+        else:
+            empty_streak = 0
 
-        # 다음 페이지 존재 여부
-        next_link = soup.select_one(f"a[href*='page={page+1}']")
-        if not next_link:
-            print(f"  → 마지막 페이지 ({page})")
+        # 그누보드 페이지네이션: .pg_next 또는 next 클래스 링크 확인
+        has_next = (
+            soup.select_one("a.pg_next") or
+            soup.select_one(".pagination a[href*='page=']") or
+            soup.find("a", string=re.compile(r"다음|next", re.I))
+        )
+        if not has_next:
+            print(f"  → 마지막 페이지 도달 ({page})")
             break
 
         time.sleep(random.uniform(0.5, 1.0))
